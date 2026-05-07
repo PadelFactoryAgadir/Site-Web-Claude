@@ -1,0 +1,58 @@
+{
+  "Metadata": {
+    "siteName": "Padel Factory",
+    "tagline": "Le padel comme vous ne l'avez jamais vécu",
+    "description": "Padel Factory : 2 clubs, 7 terrains à Agadir. Réservez votre créneau en ligne et vivez le padel autrement."
+  },
+  "Nav": {
+    "home": "Accueil",
+    "clubs": "Nos clubs",
+    "agadir": "Agadir",
+    "universiapolis": "Universiapolis",
+    "pricing": "Tarifs",
+    "book": "Réserver",
+    "coaching": "Coaching",
+    "events": "Tournois",
+    "about": "À propos",
+    "contact": "Contact"
+  },
+  "Hero": {
+    "title": "Le padel comme vous ne l'avez jamais vécu",
+    "subtitle": "Deux clubs. Sept terrains. Une seule mission : créer la meilleure expérience padel à Agadir.",
+    "ctaAgadir": "Réserver à Agadir",
+    "ctaUniversiapolis": "Réserver à Universiapolis"
+  },
+  "ClubsSection": {
+    "title": "Nos clubs",
+    "subtitle": "Deux ambiances, une même passion",
+    "agadir": {
+      "name": "Padel Factory Agadir",
+      "location": "Centre-ville d'Agadir",
+      "courts": "4 terrains",
+      "description": "Situé au cœur d'Agadir, notre club principal avec 4 terrains dernière génération, une ambiance sportive et conviviale, et une communauté active toute la semaine.",
+      "discover": "Découvrir le club",
+      "book": "Réserver"
+    },
+    "universiapolis": {
+      "name": "Padel Factory Universiapolis",
+      "location": "Campus Universiapolis",
+      "courts": "3 terrains",
+      "description": "Situé à Universiapolis, ce club de 3 terrains offre une expérience moderne et dynamique idéale pour étudiants, compétiteurs et joueurs loisirs.",
+      "discover": "Découvrir",
+      "book": "Réserver"
+    }
+  },
+  "Footer": {
+    "quickLinks": "Liens rapides",
+    "ourClubs": "Nos clubs",
+    "follow": "Suivez-nous",
+    "rights": "Tous droits réservés",
+    "openingHours": "Horaires"
+  },
+  "Common": {
+    "loading": "Chargement...",
+    "viewMore": "Voir plus",
+    "comingSoon": "Bientôt disponible",
+    "placeholder": "Contenu à venir"
+  }
+}

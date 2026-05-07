@@ -1,0 +1,58 @@
+{
+  "Metadata": {
+    "siteName": "Padel Factory",
+    "tagline": "Padel like you've never experienced",
+    "description": "Padel Factory: 2 clubs, 7 courts in Agadir. Book your slot online and experience padel differently."
+  },
+  "Nav": {
+    "home": "Home",
+    "clubs": "Our clubs",
+    "agadir": "Agadir",
+    "universiapolis": "Universiapolis",
+    "pricing": "Pricing",
+    "book": "Book",
+    "coaching": "Coaching",
+    "events": "Events",
+    "about": "About",
+    "contact": "Contact"
+  },
+  "Hero": {
+    "title": "Padel like you've never experienced",
+    "subtitle": "Two clubs. Seven courts. One mission: deliver the best padel experience in Agadir.",
+    "ctaAgadir": "Book at Agadir",
+    "ctaUniversiapolis": "Book at Universiapolis"
+  },
+  "ClubsSection": {
+    "title": "Our clubs",
+    "subtitle": "Two atmospheres, one passion",
+    "agadir": {
+      "name": "Padel Factory Agadir",
+      "location": "Downtown Agadir",
+      "courts": "4 courts",
+      "description": "Located in the heart of Agadir, our flagship club features 4 state-of-the-art courts, a sporty and welcoming atmosphere, and an active community all week long.",
+      "discover": "Discover the club",
+      "book": "Book"
+    },
+    "universiapolis": {
+      "name": "Padel Factory Universiapolis",
+      "location": "Universiapolis Campus",
+      "courts": "3 courts",
+      "description": "Located at Universiapolis, this 3-court club offers a modern and dynamic experience ideal for students, competitors and casual players.",
+      "discover": "Discover",
+      "book": "Book"
+    }
+  },
+  "Footer": {
+    "quickLinks": "Quick links",
+    "ourClubs": "Our clubs",
+    "follow": "Follow us",
+    "rights": "All rights reserved",
+    "openingHours": "Opening hours"
+  },
+  "Common": {
+    "loading": "Loading...",
+    "viewMore": "View more",
+    "comingSoon": "Coming soon",
+    "placeholder": "Content coming soon"
+  }
+}
