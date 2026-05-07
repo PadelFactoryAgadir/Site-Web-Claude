@@ -14,8 +14,8 @@ export async function generateMetadata({
   return {
     title: isFr ? 'Tarifs Padel à Agadir' : 'Padel Pricing in Agadir',
     description: isFr
-      ? 'Tarifs Padel Factory Agadir : 75 DHS/personne en heures creuses, 100 DHS/personne en heures pleines. Carte 10 séances à 850 DHS (-15%). Location raquette 20 DHS.'
-      : 'Padel Factory Agadir pricing: 75 MAD/person off-peak, 100 MAD/person peak hours. 10-session pack at 850 MAD (-15%). Racket rental 20 MAD.',
+      ? 'Tarifs Padel Factory Agadir : 300 DHS le terrain en heures creuses, 400 DHS en heures pleines. Carte 10 séances individuelle à 850 DHS (-15%). Location raquette 20 DHS.'
+      : 'Padel Factory Agadir pricing: 300 MAD per court off-peak, 400 MAD per court peak hours. 10-session individual pack at 850 MAD (-15%). Racket rental 20 MAD.',
   };
 }
 
@@ -26,10 +26,13 @@ export default async function PricingPage({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  await getTranslations(); // pour que la locale soit bien chargée
+  await getTranslations();
 
   const isFr = locale === 'fr';
   const p = AGADIR.pricing;
+  // Prix indicatif par personne = prix terrain / 4
+  const offPeakIndicative = Math.round(p.offPeakPerCourt / 4);
+  const peakIndicative = Math.round(p.peakPerCourt / 4);
 
   return (
     <article className="container-padel py-16 sm:py-24">
@@ -43,8 +46,8 @@ export default async function PricingPage({
         </h1>
         <p className="mt-6 text-white/70 text-lg leading-relaxed">
           {isFr
-            ? 'Des prix clairs, sans surprise. Heures creuses ou heures pleines, choisissez le créneau qui vous convient et venez jouer.'
-            : 'Clear pricing, no surprises. Off-peak or peak hours, pick the slot that suits you and come play.'}
+            ? 'Des prix clairs, sans surprise. Le terrain se réserve dans son intégralité, pour 4 joueurs.'
+            : 'Clear pricing, no surprises. Each court is booked as a whole, for 4 players.'}
         </p>
       </header>
 
@@ -55,13 +58,18 @@ export default async function PricingPage({
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
           {/* Heures creuses */}
-          <div className="card p-6 border-brand-blue/30">
-            <div className="flex items-center gap-3 mb-4">
+          <div className="card p-6 border-white/30">
+            <div className="flex items-center gap-3 mb-2">
               <SunIcon />
-              <h3 className="font-bold uppercase tracking-wider text-brand-blue">
+              <h3 className="font-bold uppercase tracking-wider text-white">
                 {isFr ? 'Heures creuses' : 'Off-peak hours'}
               </h3>
             </div>
+            <p className="text-xs text-white/60 mb-4 leading-relaxed">
+              {isFr
+                ? 'Du lundi au vendredi, hors jours fériés.'
+                : 'Monday to Friday, excluding public holidays.'}
+            </p>
             <ul className="space-y-2 text-white/80">
               {p.offPeakSlots.map((slot) => (
                 <li key={slot} className="font-mono text-lg">
@@ -73,12 +81,17 @@ export default async function PricingPage({
 
           {/* Heures pleines */}
           <div className="card p-6 border-brand-lime/30">
-            <div className="flex items-center gap-3 mb-4">
+            <div className="flex items-center gap-3 mb-2">
               <MoonIcon />
               <h3 className="font-bold uppercase tracking-wider text-brand-lime">
                 {isFr ? 'Heures pleines' : 'Peak hours'}
               </h3>
             </div>
+            <p className="text-xs text-white/60 mb-4 leading-relaxed">
+              {isFr
+                ? 'Du lundi au vendredi (en soirée), week-ends et jours fériés (journée entière).'
+                : 'Monday to Friday (evenings), weekends and public holidays (full day).'}
+            </p>
             <ul className="space-y-2 text-white/80">
               {p.peakSlots.map((slot) => (
                 <li key={slot} className="font-mono text-lg">
@@ -95,21 +108,26 @@ export default async function PricingPage({
         <h2 className="text-2xl font-extrabold uppercase tracking-tight text-center mb-8">
           {isFr ? 'Grille tarifaire' : 'Pricing grid'}
         </h2>
+        <p className="text-center text-white/60 text-sm mb-8 max-w-2xl mx-auto">
+          {isFr
+            ? 'Le terrain se réserve en entier (jusqu\'à 4 joueurs).'
+            : 'A court is booked as a whole (up to 4 players).'}
+        </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
           <PriceCard
             label={isFr ? 'Heures creuses' : 'Off-peak'}
             duration={p.sessionDuration}
-            perPerson={p.offPeakPerPerson}
             perCourt={p.offPeakPerCourt}
+            perPersonIndicative={offPeakIndicative}
             currency={p.currency}
-            accent="blue"
+            accent="white"
             isFr={isFr}
           />
           <PriceCard
             label={isFr ? 'Heures pleines' : 'Peak'}
             duration={p.sessionDuration}
-            perPerson={p.peakPerPerson}
             perCourt={p.peakPerCourt}
+            perPersonIndicative={peakIndicative}
             currency={p.currency}
             accent="lime"
             isFr={isFr}
@@ -117,22 +135,24 @@ export default async function PricingPage({
         </div>
       </section>
 
-      {/* Bonus : carte 10 séances + raquettes */}
+      {/* Bonus : carte 10 séances individuelle + raquettes */}
       <section className="mb-16">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-          {/* Carte 10 séances */}
+          {/* Carte 10 séances individuelle */}
           <div className="card p-8 relative overflow-hidden">
             <div className="absolute top-0 right-0 px-4 py-1.5 bg-brand-lime text-black text-xs font-bold uppercase tracking-widest rounded-bl-lg">
               -{p.sessionPackage.discount}%
             </div>
             <div className="text-3xl mb-2">👑</div>
             <h3 className="text-xl font-extrabold uppercase tracking-tight mb-2">
-              {isFr ? 'Carte 10 séances' : '10-session pack'}
-            </h3>
-            <p className="text-white/60 text-sm mb-4">
               {isFr
-                ? `Engagez-vous sur ${p.sessionPackage.sessions} séances et économisez.`
-                : `Commit to ${p.sessionPackage.sessions} sessions and save.`}
+                ? 'Carte 10 séances individuelle'
+                : '10-session individual pack'}
+            </h3>
+            <p className="text-white/60 text-sm mb-4 leading-relaxed">
+              {isFr
+                ? `Carte personnelle (non partageable). ${p.sessionPackage.sessions} séances pour 1 joueur.`
+                : `Personal card (non-shareable). ${p.sessionPackage.sessions} sessions for 1 player.`}
             </p>
             <p className="text-3xl font-black text-white">
               {p.sessionPackage.price}{' '}
@@ -164,13 +184,16 @@ export default async function PricingPage({
         <p className="text-white/60 mb-6">
           {isFr ? 'Prêt à jouer ?' : 'Ready to play?'}
         </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link href="/agadir#reservation" className="btn-primary">
+        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <Link
+            href="/agadir#reservation"
+            className="btn-primary w-full sm:w-[340px] whitespace-nowrap"
+          >
             {isFr ? 'Réserver à Agadir' : 'Book at Agadir'}
           </Link>
           <Link
             href="/universiapolis#reservation"
-            className="btn-primary-universiapolis"
+            className="btn-primary-universiapolis w-full sm:w-[340px] whitespace-nowrap"
           >
             {isFr ? 'Réserver à Universiapolis' : 'Book at Universiapolis'}
           </Link>
@@ -183,23 +206,23 @@ export default async function PricingPage({
 interface PriceCardProps {
   label: string;
   duration: string;
-  perPerson: number;
   perCourt: number;
+  perPersonIndicative: number;
   currency: string;
-  accent: 'blue' | 'lime';
+  accent: 'white' | 'lime';
   isFr: boolean;
 }
 
 function PriceCard({
   label,
   duration,
-  perPerson,
   perCourt,
+  perPersonIndicative,
   currency,
   accent,
   isFr,
 }: PriceCardProps) {
-  const accentClass = accent === 'blue' ? 'text-brand-blue' : 'text-brand-lime';
+  const accentClass = accent === 'white' ? 'text-white' : 'text-brand-lime';
   return (
     <div className="card p-8">
       <p className="text-xs font-bold uppercase tracking-[0.3em] text-white/50 mb-2">
@@ -208,32 +231,33 @@ function PriceCard({
       <h3 className={`text-2xl font-extrabold uppercase mb-6 ${accentClass}`}>
         {label}
       </h3>
-      <div className="space-y-3">
-        <div className="flex items-baseline justify-between">
-          <span className="text-white/70 text-sm">
-            {isFr ? 'Par personne' : 'Per person'}
-          </span>
-          <span className="text-2xl font-black">
-            {perPerson} <span className="text-sm text-white/60">{currency}</span>
-          </span>
-        </div>
-        <div className="h-px bg-white/10" />
-        <div className="flex items-baseline justify-between">
-          <span className="text-white/70 text-sm">
-            {isFr ? 'Le terrain' : 'Per court'}
-          </span>
-          <span className="text-2xl font-black">
-            {perCourt} <span className="text-sm text-white/60">{currency}</span>
-          </span>
-        </div>
+
+      {/* Prix terrain (mis en avant) */}
+      <div className="mb-4">
+        <p className="text-xs uppercase tracking-widest text-white/50 mb-1">
+          {isFr ? 'Le terrain (4 joueurs)' : 'Court (up to 4 players)'}
+        </p>
+        <p className="text-5xl font-black">
+          {perCourt}{' '}
+          <span className="text-lg text-white/60 font-bold">{currency}</span>
+        </p>
       </div>
+
+      <div className="h-px bg-white/10 my-4" />
+
+      {/* Prix par personne en indicatif */}
+      <p className="text-xs text-white/50 leading-relaxed">
+        {isFr
+          ? `À titre indicatif, soit environ ${perPersonIndicative} ${currency} par personne si vous venez à 4.`
+          : `For reference, about ${perPersonIndicative} ${currency} per person when playing as a group of 4.`}
+      </p>
     </div>
   );
 }
 
 function SunIcon() {
   return (
-    <svg className="w-5 h-5 text-brand-blue" fill="currentColor" viewBox="0 0 24 24">
+    <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
       <path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0a.996.996 0 000-1.41L5.99 4.58zm12.37 12.37a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0a.996.996 0 000-1.41l-1.06-1.06zm1.06-10.96a.996.996 0 000-1.41.996.996 0 00-1.41 0l-1.06 1.06a.996.996 0 000 1.41c.39.39 1.03.39 1.41 0l1.06-1.06zM7.05 18.36a.996.996 0 000-1.41.996.996 0 00-1.41 0l-1.06 1.06a.996.996 0 000 1.41c.39.39 1.03.39 1.41 0l1.06-1.06z" />
     </svg>
   );
