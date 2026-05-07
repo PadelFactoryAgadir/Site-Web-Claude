@@ -63,7 +63,7 @@ export default function HeroSection() {
         >
           <Link
             href="/agadir#reservation"
-            className="btn-primary w-full sm:w-[280px]"
+            className="btn-primary w-full sm:w-[340px] whitespace-nowrap"
           >
             {t('ctaAgadir')}
             <svg
@@ -83,7 +83,7 @@ export default function HeroSection() {
 
           <Link
             href="/universiapolis#reservation"
-            className="btn-primary-universiapolis w-full sm:w-[280px]"
+            className="btn-primary-universiapolis w-full sm:w-[340px] whitespace-nowrap"
           >
             {t('ctaUniversiapolis')}
             <svg
