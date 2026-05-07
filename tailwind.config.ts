@@ -30,8 +30,8 @@ const config: Config = {
       },
       fontSize: {
         // Tailles personnalisées pour les très gros titres "impact"
-        'hero': ['clamp(2.5rem, 7vw, 6rem)', { lineHeight: '1', letterSpacing: '-0.02em' }],
-        'display': ['clamp(2rem, 5vw, 4rem)', { lineHeight: '1.05', letterSpacing: '-0.01em' }],
+        'hero': ['clamp(2rem, 5vw, 4.5rem)', { lineHeight: '1.05', letterSpacing: '-0.02em' }],
+        'display': ['clamp(1.75rem, 4vw, 3.25rem)', { lineHeight: '1.1', letterSpacing: '-0.01em' }],
       },
       animation: {
         'fade-in': 'fadeIn 0.6s ease-out',

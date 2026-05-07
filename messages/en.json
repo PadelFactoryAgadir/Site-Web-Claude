@@ -18,9 +18,16 @@
   },
   "Hero": {
     "title": "Padel like you've never experienced",
-    "subtitle": "Two clubs. Seven courts. One mission: deliver the best padel experience in Agadir.",
+    "subtitleLine1": "Two clubs. Seven courts. One mission.",
+    "subtitleLine2": "Deliver the best Padel experience in Agadir.",
     "ctaAgadir": "Book at Agadir",
-    "ctaUniversiapolis": "Book at Universiapolis"
+    "ctaUniversiapolis": "Book at Universiapolis",
+    "stat1Number": "2",
+    "stat1Label": "Clubs",
+    "stat2Number": "7",
+    "stat2Label": "Courts",
+    "stat3Number": "+3",
+    "stat3Label": "Years of experience"
   },
   "ClubsSection": {
     "title": "Our clubs",

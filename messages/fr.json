@@ -18,9 +18,16 @@
   },
   "Hero": {
     "title": "Le padel comme vous ne l'avez jamais vécu",
-    "subtitle": "Deux clubs. Sept terrains. Une seule mission : créer la meilleure expérience padel à Agadir.",
+    "subtitleLine1": "Deux clubs. Sept terrains. Une seule mission.",
+    "subtitleLine2": "Créer la meilleure expérience Padel à Agadir.",
     "ctaAgadir": "Réserver à Agadir",
-    "ctaUniversiapolis": "Réserver à Universiapolis"
+    "ctaUniversiapolis": "Réserver à Universiapolis",
+    "stat1Number": "2",
+    "stat1Label": "Clubs",
+    "stat2Number": "7",
+    "stat2Label": "Terrains",
+    "stat3Number": "+3",
+    "stat3Label": "Ans d'expérience"
   },
   "ClubsSection": {
     "title": "Nos clubs",
