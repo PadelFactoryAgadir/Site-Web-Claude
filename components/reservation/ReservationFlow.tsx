@@ -348,51 +348,93 @@ function BottomFlow(props: BottomFlowProps) {
   const message = buildWhatsappMessage(draft, 'fr');
   const accentBg = accent === 'blue' ? 'bg-brand-blue' : 'bg-brand-green';
   const accentTextSel = accent === 'green' ? 'text-black' : 'text-white';
+  const accentTotalText =
+    accent === 'blue' ? 'text-brand-blue' : 'text-brand-green';
 
   return (
-    <div className="space-y-6">
-      {/* Récap haut : ce qu'on a sélectionné */}
-      <div className={`card p-6 border-l-4 ${accent === 'blue' ? 'border-l-brand-blue' : 'border-l-brand-green'}`}>
-        <p className="text-xs font-bold uppercase tracking-[0.3em] text-brand-lime mb-3">
+    <div className="space-y-4">
+      {/* RÉCAP TOP : ce qu'on a sélectionné (1 ligne) */}
+      <div
+        className={`card p-4 border-l-4 ${
+          accent === 'blue' ? 'border-l-brand-blue' : 'border-l-brand-green'
+        }`}
+      >
+        <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-brand-lime mb-2">
           Votre sélection
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <RecapItem label="Date" value={formatDateLong(draft.date)} />
-          <RecapItem label="Créneau" value={`${draft.slot.start} - ${draft.slot.end}`} />
+          <RecapItem
+            label="Créneau"
+            value={`${draft.slot.start} - ${draft.slot.end}`}
+          />
           <RecapItem label="Terrain" value={`Court ${draft.courtNumber}`} />
         </div>
       </div>
 
-      {/* Raquettes + Contact côte à côte */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Raquettes */}
-        <div className="card p-6">
-          <h4 className="font-extrabold uppercase tracking-wider text-sm mb-2">
-            Location de raquettes
-          </h4>
-          <p className="text-xs text-white/60 mb-4">
-            Combien de raquettes ? ({rentalPricePerRacket} DHS l'unité)
-          </p>
-          <div className="grid grid-cols-5 gap-2">
-            {[0, 1, 2, 3, 4].map((n) => (
-              <button
-                key={n}
-                type="button"
-                onClick={() => setRackets(n)}
-                className={`py-3 rounded-lg border-2 font-extrabold text-base transition ${
-                  rackets === n
-                    ? `${accentBg} ${accentTextSel} border-transparent`
-                    : 'border-white/15 hover:border-white/40 text-white'
-                }`}
-              >
-                {n}
-              </button>
-            ))}
+      {/* TROIS SOUS-COLONNES : Estimation | Coordonnées | Aperçu+Bouton */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {/* COLONNE 1 : Raquettes + Estimation tarifaire */}
+        <div className="space-y-4">
+          <div className="card p-5">
+            <h4 className="font-extrabold uppercase tracking-wider text-sm mb-1">
+              Raquettes
+            </h4>
+            <p className="text-[11px] text-white/60 mb-3">
+              {rentalPricePerRacket} DHS l'unité
+            </p>
+            <div className="grid grid-cols-5 gap-1.5">
+              {[0, 1, 2, 3, 4].map((n) => (
+                <button
+                  key={n}
+                  type="button"
+                  onClick={() => setRackets(n)}
+                  className={`py-2.5 rounded-lg border-2 font-extrabold text-base transition ${
+                    rackets === n
+                      ? `${accentBg} ${accentTextSel} border-transparent`
+                      : 'border-white/15 hover:border-white/40 text-white'
+                  }`}
+                >
+                  {n}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="card p-5">
+            <h4 className="font-extrabold uppercase tracking-wider text-sm text-brand-lime mb-3">
+              Estimation tarifaire
+            </h4>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between text-white/80 gap-2">
+                <span className="text-xs">
+                  Terrain ({draft.slot.start}—{draft.slot.end})
+                </span>
+                <span className="font-bold whitespace-nowrap">
+                  {price.court} DHS
+                </span>
+              </div>
+              {draft.rackets > 0 && (
+                <div className="flex justify-between text-white/80">
+                  <span className="text-xs">Raquettes × {draft.rackets}</span>
+                  <span className="font-bold whitespace-nowrap">
+                    {price.rackets} DHS
+                  </span>
+                </div>
+              )}
+              <div className="h-px bg-white/10 my-2" />
+              <div className="flex justify-between items-baseline">
+                <span className="font-bold">Total</span>
+                <span className={`text-2xl font-black ${accentTotalText}`}>
+                  {price.total} DHS
+                </span>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Contact */}
-        <div className="card p-6">
+        {/* COLONNE 2 : Coordonnées */}
+        <div className="card p-5">
           <h4 className="font-extrabold uppercase tracking-wider text-sm mb-4">
             Vos coordonnées
           </h4>
@@ -443,7 +485,7 @@ function BottomFlow(props: BottomFlowProps) {
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
                   placeholder="6XX XX XX XX"
-                  className="flex-1 bg-black border border-white/15 rounded-lg px-3 py-2.5 text-white text-sm placeholder:text-white/30 focus:border-white/50 focus:outline-none transition"
+                  className="flex-1 min-w-0 bg-black border border-white/15 rounded-lg px-3 py-2.5 text-white text-sm placeholder:text-white/30 focus:border-white/50 focus:outline-none transition"
                   required
                 />
               </div>
@@ -459,91 +501,61 @@ function BottomFlow(props: BottomFlowProps) {
             />
           </div>
         </div>
-      </div>
 
-      {/* Estimation de prix */}
-      <div className="card p-6">
-        <h4 className="font-extrabold uppercase tracking-wider text-sm text-brand-lime mb-4">
-          Estimation tarifaire
-        </h4>
-        <div className="space-y-2 text-sm">
-          <div className="flex justify-between text-white/80">
-            <span>Terrain ({draft.slot.start} - {draft.slot.end})</span>
-            <span className="font-bold">{price.court} DHS</span>
-          </div>
-          {draft.rackets > 0 && (
-            <div className="flex justify-between text-white/80">
-              <span>Raquettes × {draft.rackets}</span>
-              <span className="font-bold">{price.rackets} DHS</span>
-            </div>
-          )}
-          <div className="h-px bg-white/10 my-3" />
-          <div className="flex justify-between text-xl">
-            <span className="font-bold">Total</span>
-            <span className={`font-black ${accent === 'blue' ? 'text-brand-blue' : 'text-brand-green'}`}>
-              {price.total} DHS
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* Aperçu du message */}
-      <div className="card p-6">
-        <h4 className="font-extrabold uppercase tracking-wider text-sm mb-3">
-          Aperçu du message envoyé
-        </h4>
-        <p className="text-xs text-white/50 mb-4">
-          Voici le message qui sera envoyé au club par WhatsApp.
-        </p>
-        <pre className="bg-black/50 border border-white/10 rounded-lg p-4 text-xs text-white/80 whitespace-pre-wrap font-mono leading-relaxed overflow-auto">
-          {message}
-        </pre>
-      </div>
-
-      {/* AVERTISSEMENT */}
-      <div className="rounded-2xl border-2 border-brand-lime bg-brand-lime/10 p-6">
-        <div className="flex items-start gap-3">
-          <div className="w-10 h-10 rounded-full bg-brand-lime text-black flex items-center justify-center flex-shrink-0 font-black text-xl">
-            !
-          </div>
-          <div>
-            <h4 className="font-extrabold uppercase tracking-wider text-brand-lime mb-2">
-              Important — à lire avant d'envoyer
+        {/* COLONNE 3 : Aperçu du message + Avertissement + Bouton */}
+        <div className="space-y-4">
+          <div className="card p-5">
+            <h4 className="font-extrabold uppercase tracking-wider text-sm mb-2">
+              Aperçu du message
             </h4>
-            <p className="text-sm text-white leading-relaxed">
-              Votre demande sera envoyée par WhatsApp. <strong>Votre réservation
-              n'est PAS confirmée tant que le club ne vous a pas explicitement
-              répondu</strong> par message pour valider votre créneau et votre terrain.
+            <p className="text-[11px] text-white/50 mb-3">
+              Le message envoyé au club via WhatsApp
             </p>
-            <p className="text-sm text-white/80 leading-relaxed mt-3">
-              Pensez à <strong>bien attendre la réponse du club</strong>. Sans
-              cette confirmation, votre créneau peut être attribué à un autre
-              joueur entre-temps.
-            </p>
+            <pre className="bg-black/50 border border-white/10 rounded-lg p-3 text-[11px] text-white/80 whitespace-pre-wrap font-mono leading-relaxed max-h-44 overflow-auto">
+              {message}
+            </pre>
           </div>
+
+          <div className="rounded-xl border-2 border-brand-lime bg-brand-lime/10 p-4">
+            <div className="flex items-start gap-2.5">
+              <div className="w-7 h-7 rounded-full bg-brand-lime text-black flex items-center justify-center flex-shrink-0 font-black">
+                !
+              </div>
+              <div>
+                <h4 className="font-extrabold uppercase tracking-wider text-brand-lime text-xs mb-1.5">
+                  Important
+                </h4>
+                <p className="text-xs text-white leading-relaxed">
+                  Votre réservation <strong>n'est PAS confirmée</strong> tant
+                  que le club ne vous a pas explicitement répondu sur WhatsApp.
+                  <strong> Attendez bien la réponse</strong>, sans quoi le
+                  créneau peut être pris par un autre joueur.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={onSend}
+            disabled={!canSend}
+            className={`w-full inline-flex items-center justify-center gap-2.5 px-5 py-4 rounded-xl font-black uppercase tracking-wider text-base transition-all ${
+              canSend
+                ? 'bg-[#25D366] hover:bg-[#1eb858] text-white hover:scale-[1.02] active:scale-[0.98] cursor-pointer shadow-glow-green'
+                : 'bg-white/10 text-white/40 cursor-not-allowed'
+            }`}
+          >
+            <WhatsAppIcon />
+            Envoyer au club
+          </button>
+
+          {!canSend && (
+            <p className="text-center text-[11px] text-white/50">
+              Complétez vos coordonnées pour activer l'envoi.
+            </p>
+          )}
         </div>
       </div>
-
-      {/* Bouton envoyer */}
-      <button
-        type="button"
-        onClick={onSend}
-        disabled={!canSend}
-        className={`w-full inline-flex items-center justify-center gap-3 px-6 py-5 rounded-xl font-black uppercase tracking-wider text-lg transition-all ${
-          canSend
-            ? 'bg-[#25D366] hover:bg-[#1eb858] text-white hover:scale-[1.02] active:scale-[0.98] cursor-pointer shadow-glow-green'
-            : 'bg-white/10 text-white/40 cursor-not-allowed'
-        }`}
-      >
-        <WhatsAppIcon />
-        Envoyer la demande au club
-      </button>
-
-      {!canSend && (
-        <p className="text-center text-xs text-white/50">
-          Complétez vos coordonnées pour pouvoir envoyer.
-        </p>
-      )}
     </div>
   );
 }

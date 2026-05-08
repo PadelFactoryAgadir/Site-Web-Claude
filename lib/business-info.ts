@@ -22,6 +22,7 @@ export const SITE = {
 } as const;
 
 export const SOCIAL = {
+  // Instagram du compte principal (Padel Factory Agadir)
   instagram: 'https://www.instagram.com/padelfactoryagadir/',
   instagramHandle: '@padelfactoryagadir',
 } as const;
@@ -60,6 +61,12 @@ export const AGADIR = {
   phoneHref: 'tel:+212633809981',
   whatsapp: '212633809981', // sans + ni espaces pour wa.me
   whatsappLink: 'https://wa.me/212633809981',
+  // Réseaux sociaux du club
+  instagram: 'https://www.instagram.com/padelfactoryagadir/',
+  instagramHandle: '@padelfactoryagadir',
+  // Cartes
+  googleMapsUrl: 'https://maps.app.goo.gl/YZgugpYDJ2i7gZeRA',
+  googleMapsEmbedQuery: 'Padel+Factory+Agadir',
   // Horaires (PLACEHOLDER : à confirmer avec Nacer)
   openingHours: [
     { days: 'Lun-Dim', open: '09:30', close: '23:00' },
@@ -101,11 +108,17 @@ export const UNIVERSIAPOLIS = {
     latitude: 30.4150, // à affiner
     longitude: -9.5720, // à affiner
   },
-  // Téléphone (PLACEHOLDER : à confirmer si différent du club principal)
-  phone: '+212 633 80 99 81',
-  phoneHref: 'tel:+212633809981',
-  whatsapp: '212633809981',
-  whatsappLink: 'https://wa.me/212633809981',
+  // Téléphone propre au club Universiapolis
+  phone: '+212 655 47 17 45',
+  phoneHref: 'tel:+212655471745',
+  whatsapp: '212655471745',
+  whatsappLink: 'https://wa.me/212655471745',
+  // Réseaux sociaux propres au club Universiapolis
+  instagram: 'https://www.instagram.com/universiapadel/',
+  instagramHandle: '@universiapadel',
+  // Cartes
+  googleMapsUrl: 'https://maps.app.goo.gl/Vb6P9WsBqKRRNfTk6',
+  googleMapsEmbedQuery: 'Padel+Factory+Universiapolis',
   openingHours: [
     { days: 'Lun-Dim', open: '09:30', close: '23:00' },
   ],

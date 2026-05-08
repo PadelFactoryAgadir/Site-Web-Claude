@@ -21,11 +21,8 @@ export default function Header() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const logoVariant = pathname.startsWith('/agadir')
-    ? 'blue'
-    : pathname.startsWith('/universiapolis')
-    ? 'green'
-    : 'default';
+  // Logo standard (bleu/blanc) gardé partout, y compris sur Universiapolis
+  const logoVariant = 'default';
 
   // Détermine le contexte du bouton Réserver
   const onAgadir = pathname.startsWith('/agadir');

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
 import { UNIVERSIAPOLIS } from '@/lib/business-info';
 import ReservationFlow from '@/components/reservation/ReservationFlow';
+import MapEmbed from '@/components/MapEmbed';
 
 export async function generateMetadata({
   params,
@@ -58,25 +59,35 @@ export default async function UniversiapolisPage({
         </div>
       </section>
 
-      {/* Section infos pratiques */}
+      {/* Section infos pratiques + carte */}
       <section className="py-16 sm:py-20 border-b border-white/10">
-        <div className="container-padel grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <InfoCard icon="📍" title="Localisation">
-            {UNIVERSIAPOLIS.address.street}, Agadir
-            <br />
-            <span className="text-white/50 text-xs">
-              Université Internationale d'Agadir
-            </span>
-          </InfoCard>
-          <InfoCard icon="🅿️" title="Parking">
-            Parking universitaire accessible
-          </InfoCard>
-          <InfoCard icon="🚿" title="Vestiaires">
-            Vestiaires + douches sur place
-          </InfoCard>
-          <InfoCard icon="🎓" title="Communauté">
-            Étudiants, compétiteurs, loisir
-          </InfoCard>
+        <div className="container-padel">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+            <InfoCard icon="📍" title="Localisation">
+              {UNIVERSIAPOLIS.address.street}, Agadir
+              <br />
+              <span className="text-white/50 text-xs">
+                Université Internationale d'Agadir
+              </span>
+            </InfoCard>
+            <InfoCard icon="🅿️" title="Parking">
+              Parking universitaire accessible
+            </InfoCard>
+            <InfoCard icon="🚿" title="Vestiaires">
+              Vestiaires + douches sur place
+            </InfoCard>
+            <InfoCard icon="🎓" title="Communauté">
+              Étudiants, compétiteurs, loisir
+            </InfoCard>
+          </div>
+
+          {/* Carte Google Maps */}
+          <MapEmbed
+            query={UNIVERSIAPOLIS.googleMapsEmbedQuery}
+            mapsUrl={UNIVERSIAPOLIS.googleMapsUrl}
+            title={UNIVERSIAPOLIS.name}
+            height={380}
+          />
         </div>
       </section>
 
