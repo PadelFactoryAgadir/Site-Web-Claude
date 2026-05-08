@@ -16,9 +16,7 @@ interface SlotPickerProps {
 
 /**
  * Affiche les créneaux disponibles pour une date donnée.
- * - Sépare visuellement les heures creuses des heures pleines
- * - Sur un jour férié ou un week-end : tous les créneaux sont en "heures pleines"
- * - Affiche le prix du terrain à côté du créneau
+ * Compact, optimisé pour une colonne étroite.
  */
 export default function SlotPicker({
   date,
@@ -32,11 +30,11 @@ export default function SlotPicker({
   const allPeak = isPeakDay(date);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {!allPeak && offPeak.length > 0 && (
         <SlotGroup
           title="Heures creuses"
-          subtitle="Du lundi au vendredi, hors jours fériés"
+          subtitle="Lun-Ven hors fériés"
           color="white"
           slots={offPeak}
           date={date}
@@ -49,11 +47,7 @@ export default function SlotPicker({
       {peak.length > 0 && (
         <SlotGroup
           title="Heures pleines"
-          subtitle={
-            allPeak
-              ? 'Week-end / jour férié — toute la journée'
-              : 'En soirée'
-          }
+          subtitle={allPeak ? 'WE / férié' : 'En soirée'}
           color="lime"
           slots={peak}
           date={date}
@@ -92,26 +86,26 @@ function SlotGroup({
 
   return (
     <div>
-      <div className="flex items-center gap-3 mb-4">
+      <div className="flex items-center gap-2 mb-3">
         <span className={`w-2 h-2 rounded-full ${dotColor}`} />
         <div>
-          <h4 className={`font-extrabold uppercase tracking-wider text-sm ${titleColor}`}>
+          <h4 className={`font-extrabold uppercase tracking-wider text-xs ${titleColor}`}>
             {title}
           </h4>
-          <p className="text-xs text-white/50 mt-0.5">{subtitle}</p>
+          <p className="text-[10px] text-white/50">{subtitle}</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
         {slots.map((slot) => {
           const available = isSlotAvailable(date, slot.index);
           const isSelected = selectedSlotIndex === slot.index;
 
           let buttonClasses =
-            'p-4 rounded-xl border-2 text-left transition-all duration-200';
+            'p-3 rounded-lg border-2 text-left transition-all duration-200';
           if (!available) {
             buttonClasses +=
-              ' border-white/10 bg-white/[0.02] text-white/30 cursor-not-allowed line-through';
+              ' border-white/10 bg-white/[0.02] text-white/30 cursor-not-allowed';
           } else if (isSelected) {
             const selectedClasses =
               accent === 'blue'
@@ -131,17 +125,12 @@ function SlotGroup({
               disabled={!available}
               className={buttonClasses}
             >
-              <div className="font-mono text-base font-bold">
-                {slot.start} - {slot.end}
+              <div className={`font-mono text-sm font-bold ${!available ? 'line-through' : ''}`}>
+                {slot.start}—{slot.end}
               </div>
-              <div className="text-xs text-white/60 mt-1">
-                {slot.pricePerCourt} DHS / terrain
+              <div className="text-[10px] text-white/60 mt-0.5">
+                {available ? `${slot.pricePerCourt} DHS` : 'Indispo'}
               </div>
-              {!available && (
-                <div className="text-[10px] uppercase tracking-widest text-white/40 mt-2">
-                  Indisponible
-                </div>
-              )}
             </button>
           );
         })}

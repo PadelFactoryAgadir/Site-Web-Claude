@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import CalendarPicker from './CalendarPicker';
 import SlotPicker from './SlotPicker';
 import CourtPicker from './CourtPicker';
@@ -15,22 +15,24 @@ import type { TimeSlot } from '@/lib/availability';
 interface ReservationFlowProps {
   clubName: string;
   totalCourts: number;
-  whatsappNumber: string; // sans + ni espaces
+  whatsappNumber: string;
   rentalPricePerRacket: number;
-  /** Couleur du club */
   accent: 'blue' | 'green';
 }
 
 /**
- * Wizard de réservation en 5 étapes :
- *  1. Date
- *  2. Créneau
- *  3. Terrain
- *  4. Raquettes + Contact
- *  5. Aperçu + envoi WhatsApp
+ * Wizard de réservation en disposition 3 colonnes (desktop).
+ * Sur mobile : empilement vertical.
  *
- * Toutes les étapes sont visibles sur la même page (pas de page suivante).
- * Quand une étape est validée, la suivante apparaît avec animation.
+ *   ┌─────────────┬──────────────┬──────────────┐
+ *   │ 1. Date     │ 2. Créneau   │ 3. Terrain   │
+ *   │ (calendrier │ (slots si    │ (courts si   │
+ *   │  compact)   │  date choisie│  slot choisi)│
+ *   └─────────────┴──────────────┴──────────────┘
+ *               ↓ (quand tout est choisi)
+ *   ┌──────────────────────────────────────────┐
+ *   │ 4. Récap + Coordonnées + Envoi WhatsApp │
+ *   └──────────────────────────────────────────┘
  */
 export default function ReservationFlow({
   clubName,
@@ -54,9 +56,10 @@ export default function ReservationFlow({
   // État final
   const [sent, setSent] = useState(false);
 
-  const accentBg = accent === 'blue' ? 'bg-brand-blue' : 'bg-brand-green';
+  // Réf vers le bas pour scroller automatiquement quand le récap apparaît
+  const summaryRef = useRef<HTMLDivElement | null>(null);
 
-  // Quand une nouvelle date est choisie, on reset le créneau et le terrain
+  // Quand la date change, on reset le créneau et le terrain
   const handleDateChange = (d: Date) => {
     setDate(d);
     setSlot(null);
@@ -66,6 +69,16 @@ export default function ReservationFlow({
     setSlot(s);
     setCourt(null);
   };
+  const handleCourtChange = (n: number) => {
+    setCourt(n);
+  };
+
+  // Quand un terrain est choisi, scroller en douceur jusqu'au récap
+  useEffect(() => {
+    if (court !== null && summaryRef.current) {
+      summaryRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [court]);
 
   const draft: ReservationDraft | null = useMemo(() => {
     if (!date || !slot || !court) return null;
@@ -84,18 +97,9 @@ export default function ReservationFlow({
       email: email.trim(),
     };
   }, [
-    date,
-    slot,
-    court,
-    rackets,
-    clubName,
-    whatsappNumber,
-    rentalPricePerRacket,
-    firstName,
-    lastName,
-    phonePrefix,
-    phoneNumber,
-    email,
+    date, slot, court, rackets,
+    clubName, whatsappNumber, rentalPricePerRacket,
+    firstName, lastName, phonePrefix, phoneNumber, email,
   ]);
 
   const isContactComplete =
@@ -113,91 +117,287 @@ export default function ReservationFlow({
     setSent(true);
   };
 
-  // Si déjà envoyé, on affiche l'écran de confirmation
   if (sent) {
-    return <SentConfirmation onReset={() => {
-      setSent(false);
-      setDate(null);
-      setSlot(null);
-      setCourt(null);
-      setRackets(0);
-    }} />;
+    return (
+      <SentConfirmation
+        onReset={() => {
+          setSent(false);
+          setDate(null);
+          setSlot(null);
+          setCourt(null);
+          setRackets(0);
+        }}
+      />
+    );
   }
 
   return (
-    <div className="space-y-10">
-      {/* Étape 1 : Date */}
-      <Step number={1} title="Choisissez votre date" active={true} done={!!date} accent={accent}>
-        <CalendarPicker
-          selected={date}
-          onSelect={handleDateChange}
+    <div>
+      {/* TROIS COLONNES */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {/* Colonne 1 : Date */}
+        <Column step={1} title="Date" filled={!!date} accent={accent}>
+          <CalendarPicker selected={date} onSelect={handleDateChange} accent={accent} />
+        </Column>
+
+        {/* Colonne 2 : Créneau */}
+        <Column
+          step={2}
+          title="Créneau"
+          filled={!!slot}
           accent={accent}
-        />
-      </Step>
+          info={date ? formatDateShort(date) : null}
+          disabled={!date}
+        >
+          {date ? (
+            <SlotPicker
+              date={date}
+              selectedSlotIndex={slot?.index ?? null}
+              onSelect={handleSlotChange}
+              accent={accent}
+            />
+          ) : (
+            <EmptyState
+              icon="📅"
+              text="Sélectionnez d'abord une date dans le calendrier"
+            />
+          )}
+        </Column>
 
-      {/* Étape 2 : Créneau */}
-      {date && (
-        <Step number={2} title="Choisissez votre créneau" active={true} done={!!slot} accent={accent}>
-          <SlotPicker
-            date={date}
-            selectedSlotIndex={slot?.index ?? null}
-            onSelect={handleSlotChange}
+        {/* Colonne 3 : Terrain */}
+        <Column
+          step={3}
+          title="Terrain"
+          filled={court !== null}
+          accent={accent}
+          info={
+            date && slot
+              ? `${formatDateShort(date)} · ${slot.start}—${slot.end}`
+              : null
+          }
+          disabled={!slot}
+        >
+          {date && slot ? (
+            <CourtPicker
+              date={date}
+              slotIndex={slot.index}
+              totalCourts={totalCourts}
+              selectedCourt={court}
+              onSelect={handleCourtChange}
+              accent={accent}
+            />
+          ) : (
+            <EmptyState
+              icon="🎾"
+              text="Sélectionnez d'abord un créneau"
+            />
+          )}
+        </Column>
+      </div>
+
+      {/* SECTION DU BAS : récap + raquettes + formulaire + envoi */}
+      {draft && (
+        <div ref={summaryRef} className="mt-12 scroll-mt-24 animate-slide-up">
+          <BottomFlow
+            draft={draft}
+            rackets={rackets}
+            setRackets={setRackets}
+            rentalPricePerRacket={rentalPricePerRacket}
+            firstName={firstName}
+            setFirstName={setFirstName}
+            lastName={lastName}
+            setLastName={setLastName}
+            phonePrefix={phonePrefix}
+            setPhonePrefix={setPhonePrefix}
+            phoneNumber={phoneNumber}
+            setPhoneNumber={setPhoneNumber}
+            email={email}
+            setEmail={setEmail}
             accent={accent}
+            canSend={canSend}
+            onSend={handleSend}
           />
-        </Step>
+        </div>
       )}
+    </div>
+  );
+}
 
-      {/* Étape 3 : Terrain */}
-      {date && slot && (
-        <Step number={3} title="Choisissez votre terrain" active={true} done={court !== null} accent={accent}>
-          <CourtPicker
-            date={date}
-            slotIndex={slot.index}
-            totalCourts={totalCourts}
-            selectedCourt={court}
-            onSelect={setCourt}
-            accent={accent}
-          />
-        </Step>
-      )}
+// ============================================================================
+// COMPOSANTS UTILITAIRES
+// ============================================================================
 
-      {/* Étape 4 : Raquettes + Contact */}
-      {date && slot && court !== null && (
-        <Step number={4} title="Vos informations" active={true} done={isContactComplete} accent={accent}>
-          {/* Raquettes */}
-          <div className="card p-6 mb-6">
-            <h4 className="font-extrabold uppercase tracking-wider text-sm mb-2">
-              Location de raquettes
-            </h4>
-            <p className="text-sm text-white/60 mb-4">
-              Combien de raquettes avez-vous besoin ? ({rentalPricePerRacket} DHS l'unité)
-            </p>
-            <div className="grid grid-cols-5 gap-3">
-              {[0, 1, 2, 3, 4].map((n) => (
-                <button
-                  key={n}
-                  type="button"
-                  onClick={() => setRackets(n)}
-                  className={`py-4 rounded-xl border-2 font-extrabold text-lg transition ${
-                    rackets === n
-                      ? `${accentBg} text-white border-transparent ${
-                          accent === 'green' ? 'text-black' : ''
-                        }`
-                      : 'border-white/15 hover:border-white/40 text-white'
-                  }`}
-                >
-                  {n}
-                </button>
-              ))}
-            </div>
+function Column({
+  step,
+  title,
+  filled,
+  accent,
+  info,
+  disabled = false,
+  children,
+}: {
+  step: number;
+  title: string;
+  filled: boolean;
+  accent: 'blue' | 'green';
+  info?: string | null;
+  disabled?: boolean;
+  children: React.ReactNode;
+}) {
+  const accentBg = accent === 'blue' ? 'bg-brand-blue' : 'bg-brand-green';
+  const accentText = accent === 'green' ? 'text-black' : 'text-white';
+
+  return (
+    <div
+      className={`card p-5 transition-opacity ${disabled ? 'opacity-50' : ''}`}
+    >
+      <div className="flex items-center gap-3 mb-4">
+        <div
+          className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-black flex-shrink-0 ${
+            filled ? `${accentBg} ${accentText}` : 'bg-white/10 text-white/60'
+          }`}
+        >
+          {filled ? '✓' : step}
+        </div>
+        <div className="flex-1 min-w-0">
+          <h3 className="text-base font-extrabold uppercase tracking-tight">
+            {title}
+          </h3>
+          {info && (
+            <p className="text-[11px] text-white/60 truncate mt-0.5">{info}</p>
+          )}
+        </div>
+      </div>
+      <div>{children}</div>
+    </div>
+  );
+}
+
+function EmptyState({ icon, text }: { icon: string; text: string }) {
+  return (
+    <div className="flex flex-col items-center justify-center py-12 text-center">
+      <div className="text-3xl opacity-30 mb-3">{icon}</div>
+      <p className="text-xs text-white/40 max-w-[180px] leading-relaxed">{text}</p>
+    </div>
+  );
+}
+
+function formatDateShort(date: Date): string {
+  return new Intl.DateTimeFormat('fr-FR', {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+  }).format(date);
+}
+
+function formatDateLong(date: Date): string {
+  return new Intl.DateTimeFormat('fr-FR', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  }).format(date);
+}
+
+// ============================================================================
+// SECTION DU BAS (récap + raquettes + form + envoi)
+// ============================================================================
+
+interface BottomFlowProps {
+  draft: ReservationDraft;
+  rackets: number;
+  setRackets: (n: number) => void;
+  rentalPricePerRacket: number;
+  firstName: string;
+  setFirstName: (v: string) => void;
+  lastName: string;
+  setLastName: (v: string) => void;
+  phonePrefix: string;
+  setPhonePrefix: (v: string) => void;
+  phoneNumber: string;
+  setPhoneNumber: (v: string) => void;
+  email: string;
+  setEmail: (v: string) => void;
+  accent: 'blue' | 'green';
+  canSend: boolean;
+  onSend: () => void;
+}
+
+function BottomFlow(props: BottomFlowProps) {
+  const {
+    draft,
+    rackets,
+    setRackets,
+    rentalPricePerRacket,
+    firstName,
+    setFirstName,
+    lastName,
+    setLastName,
+    phonePrefix,
+    setPhonePrefix,
+    phoneNumber,
+    setPhoneNumber,
+    email,
+    setEmail,
+    accent,
+    canSend,
+    onSend,
+  } = props;
+
+  const price = calculatePrice(draft);
+  const message = buildWhatsappMessage(draft, 'fr');
+  const accentBg = accent === 'blue' ? 'bg-brand-blue' : 'bg-brand-green';
+  const accentTextSel = accent === 'green' ? 'text-black' : 'text-white';
+
+  return (
+    <div className="space-y-6">
+      {/* Récap haut : ce qu'on a sélectionné */}
+      <div className={`card p-6 border-l-4 ${accent === 'blue' ? 'border-l-brand-blue' : 'border-l-brand-green'}`}>
+        <p className="text-xs font-bold uppercase tracking-[0.3em] text-brand-lime mb-3">
+          Votre sélection
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <RecapItem label="Date" value={formatDateLong(draft.date)} />
+          <RecapItem label="Créneau" value={`${draft.slot.start} - ${draft.slot.end}`} />
+          <RecapItem label="Terrain" value={`Court ${draft.courtNumber}`} />
+        </div>
+      </div>
+
+      {/* Raquettes + Contact côte à côte */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Raquettes */}
+        <div className="card p-6">
+          <h4 className="font-extrabold uppercase tracking-wider text-sm mb-2">
+            Location de raquettes
+          </h4>
+          <p className="text-xs text-white/60 mb-4">
+            Combien de raquettes ? ({rentalPricePerRacket} DHS l'unité)
+          </p>
+          <div className="grid grid-cols-5 gap-2">
+            {[0, 1, 2, 3, 4].map((n) => (
+              <button
+                key={n}
+                type="button"
+                onClick={() => setRackets(n)}
+                className={`py-3 rounded-lg border-2 font-extrabold text-base transition ${
+                  rackets === n
+                    ? `${accentBg} ${accentTextSel} border-transparent`
+                    : 'border-white/15 hover:border-white/40 text-white'
+                }`}
+              >
+                {n}
+              </button>
+            ))}
           </div>
+        </div>
 
-          {/* Formulaire contact */}
-          <div className="card p-6">
-            <h4 className="font-extrabold uppercase tracking-wider text-sm mb-4">
-              Vos coordonnées
-            </h4>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {/* Contact */}
+        <div className="card p-6">
+          <h4 className="font-extrabold uppercase tracking-wider text-sm mb-4">
+            Vos coordonnées
+          </h4>
+          <div className="space-y-3">
+            <div className="grid grid-cols-2 gap-2">
               <Field
                 label="Prénom"
                 value={firstName}
@@ -212,168 +412,59 @@ export default function ReservationFlow({
                 placeholder="Benzekri"
                 required
               />
-
-              {/* Téléphone avec indicatif */}
-              <div className="sm:col-span-2">
-                <label className="block text-xs font-bold uppercase tracking-widest text-white/60 mb-2">
-                  Téléphone *
-                </label>
-                <div className="flex gap-2">
-                  <select
-                    value={phonePrefix}
-                    onChange={(e) => setPhonePrefix(e.target.value)}
-                    className="bg-black border border-white/15 rounded-lg px-3 py-3 text-white focus:border-white/50 focus:outline-none transition"
-                    aria-label="Indicatif téléphonique"
-                  >
-                    <option value="+212">🇲🇦 +212</option>
-                    <option value="+33">🇫🇷 +33</option>
-                    <option value="+34">🇪🇸 +34</option>
-                    <option value="+44">🇬🇧 +44</option>
-                    <option value="+1">🇺🇸 +1</option>
-                    <option value="+971">🇦🇪 +971</option>
-                    <option value="+966">🇸🇦 +966</option>
-                    <option value="+49">🇩🇪 +49</option>
-                    <option value="+39">🇮🇹 +39</option>
-                    <option value="+32">🇧🇪 +32</option>
-                    <option value="+31">🇳🇱 +31</option>
-                    <option value="+41">🇨🇭 +41</option>
-                  </select>
-                  <input
-                    type="tel"
-                    value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
-                    placeholder="6XX XX XX XX"
-                    className="flex-1 bg-black border border-white/15 rounded-lg px-4 py-3 text-white placeholder:text-white/30 focus:border-white/50 focus:outline-none transition"
-                    required
-                  />
-                </div>
-              </div>
-
-              <Field
-                label="Email"
-                type="email"
-                value={email}
-                onChange={setEmail}
-                placeholder="exemple@email.com"
-                required
-                className="sm:col-span-2"
-              />
             </div>
+
+            <div>
+              <label className="block text-[10px] font-bold uppercase tracking-widest text-white/60 mb-1.5">
+                Téléphone *
+              </label>
+              <div className="flex gap-2">
+                <select
+                  value={phonePrefix}
+                  onChange={(e) => setPhonePrefix(e.target.value)}
+                  className="bg-black border border-white/15 rounded-lg px-2 py-2.5 text-white text-sm focus:border-white/50 focus:outline-none transition"
+                  aria-label="Indicatif"
+                >
+                  <option value="+212">🇲🇦 +212</option>
+                  <option value="+33">🇫🇷 +33</option>
+                  <option value="+34">🇪🇸 +34</option>
+                  <option value="+44">🇬🇧 +44</option>
+                  <option value="+1">🇺🇸 +1</option>
+                  <option value="+971">🇦🇪 +971</option>
+                  <option value="+966">🇸🇦 +966</option>
+                  <option value="+49">🇩🇪 +49</option>
+                  <option value="+39">🇮🇹 +39</option>
+                  <option value="+32">🇧🇪 +32</option>
+                  <option value="+31">🇳🇱 +31</option>
+                  <option value="+41">🇨🇭 +41</option>
+                </select>
+                <input
+                  type="tel"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  placeholder="6XX XX XX XX"
+                  className="flex-1 bg-black border border-white/15 rounded-lg px-3 py-2.5 text-white text-sm placeholder:text-white/30 focus:border-white/50 focus:outline-none transition"
+                  required
+                />
+              </div>
+            </div>
+
+            <Field
+              label="Email"
+              type="email"
+              value={email}
+              onChange={setEmail}
+              placeholder="exemple@email.com"
+              required
+            />
           </div>
-        </Step>
-      )}
-
-      {/* Étape 5 : Aperçu + Envoi */}
-      {draft && (
-        <Step number={5} title="Aperçu et envoi" active={true} done={false} accent={accent}>
-          <PreviewAndSend
-            draft={draft}
-            canSend={canSend}
-            onSend={handleSend}
-            accent={accent}
-          />
-        </Step>
-      )}
-    </div>
-  );
-}
-
-// ============================================================================
-// Composants utilitaires
-// ============================================================================
-
-function Step({
-  number,
-  title,
-  active,
-  done,
-  children,
-  accent,
-}: {
-  number: number;
-  title: string;
-  active: boolean;
-  done: boolean;
-  children: React.ReactNode;
-  accent: 'blue' | 'green';
-}) {
-  const accentBg = accent === 'blue' ? 'bg-brand-blue' : 'bg-brand-green';
-  const textColor = accent === 'green' ? 'text-black' : 'text-white';
-
-  return (
-    <section className="animate-slide-up">
-      <header className="flex items-center gap-4 mb-6">
-        <div
-          className={`w-10 h-10 rounded-full flex items-center justify-center font-black text-lg ${
-            active ? `${accentBg} ${textColor}` : 'bg-white/10 text-white/50'
-          }`}
-        >
-          {done ? '✓' : number}
         </div>
-        <h3 className="text-xl sm:text-2xl font-extrabold uppercase tracking-tight">
-          {title}
-        </h3>
-      </header>
-      {children}
-    </section>
-  );
-}
+      </div>
 
-function Field({
-  label,
-  value,
-  onChange,
-  placeholder,
-  type = 'text',
-  required,
-  className = '',
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-  placeholder: string;
-  type?: string;
-  required?: boolean;
-  className?: string;
-}) {
-  return (
-    <div className={className}>
-      <label className="block text-xs font-bold uppercase tracking-widest text-white/60 mb-2">
-        {label}
-        {required && ' *'}
-      </label>
-      <input
-        type={type}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        required={required}
-        className="w-full bg-black border border-white/15 rounded-lg px-4 py-3 text-white placeholder:text-white/30 focus:border-white/50 focus:outline-none transition"
-      />
-    </div>
-  );
-}
-
-function PreviewAndSend({
-  draft,
-  canSend,
-  onSend,
-  accent,
-}: {
-  draft: ReservationDraft;
-  canSend: boolean;
-  onSend: () => void;
-  accent: 'blue' | 'green';
-}) {
-  const price = calculatePrice(draft);
-  const message = buildWhatsappMessage(draft, 'fr');
-
-  return (
-    <div className="space-y-6">
-      {/* Récapitulatif prix */}
+      {/* Estimation de prix */}
       <div className="card p-6">
         <h4 className="font-extrabold uppercase tracking-wider text-sm text-brand-lime mb-4">
-          Récapitulatif tarifaire
+          Estimation tarifaire
         </h4>
         <div className="space-y-2 text-sm">
           <div className="flex justify-between text-white/80">
@@ -387,7 +478,7 @@ function PreviewAndSend({
             </div>
           )}
           <div className="h-px bg-white/10 my-3" />
-          <div className="flex justify-between text-lg">
+          <div className="flex justify-between text-xl">
             <span className="font-bold">Total</span>
             <span className={`font-black ${accent === 'blue' ? 'text-brand-blue' : 'text-brand-green'}`}>
               {price.total} DHS
@@ -402,14 +493,14 @@ function PreviewAndSend({
           Aperçu du message envoyé
         </h4>
         <p className="text-xs text-white/50 mb-4">
-          Voici le message qui sera envoyé au club par WhatsApp en cliquant sur "Envoyer".
+          Voici le message qui sera envoyé au club par WhatsApp.
         </p>
         <pre className="bg-black/50 border border-white/10 rounded-lg p-4 text-xs text-white/80 whitespace-pre-wrap font-mono leading-relaxed overflow-auto">
           {message}
         </pre>
       </div>
 
-      {/* AVERTISSEMENT IMPORTANT */}
+      {/* AVERTISSEMENT */}
       <div className="rounded-2xl border-2 border-brand-lime bg-brand-lime/10 p-6">
         <div className="flex items-start gap-3">
           <div className="w-10 h-10 rounded-full bg-brand-lime text-black flex items-center justify-center flex-shrink-0 font-black text-xl">
@@ -450,9 +541,53 @@ function PreviewAndSend({
 
       {!canSend && (
         <p className="text-center text-xs text-white/50">
-          Complétez d'abord vos coordonnées pour pouvoir envoyer.
+          Complétez vos coordonnées pour pouvoir envoyer.
         </p>
       )}
+    </div>
+  );
+}
+
+function RecapItem({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <p className="text-[10px] uppercase tracking-widest text-white/50 mb-1">
+        {label}
+      </p>
+      <p className="font-bold text-white text-base">{value}</p>
+    </div>
+  );
+}
+
+function Field({
+  label,
+  value,
+  onChange,
+  placeholder,
+  type = 'text',
+  required,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  placeholder: string;
+  type?: string;
+  required?: boolean;
+}) {
+  return (
+    <div>
+      <label className="block text-[10px] font-bold uppercase tracking-widest text-white/60 mb-1.5">
+        {label}
+        {required && ' *'}
+      </label>
+      <input
+        type={type}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        required={required}
+        className="w-full bg-black border border-white/15 rounded-lg px-3 py-2.5 text-white text-sm placeholder:text-white/30 focus:border-white/50 focus:outline-none transition"
+      />
     </div>
   );
 }
@@ -481,7 +616,6 @@ function SentConfirmation({ onReset }: { onReset: () => void }) {
         que vous avez cliqué sur "Envoyer" dans WhatsApp pour finaliser votre demande.
       </p>
 
-      {/* Avertissement final */}
       <div className="rounded-2xl border-2 border-brand-lime bg-brand-lime/10 p-5 text-left max-w-2xl mx-auto mb-8">
         <p className="text-sm text-white leading-relaxed">
           <strong className="text-brand-lime uppercase tracking-wider text-xs block mb-2">

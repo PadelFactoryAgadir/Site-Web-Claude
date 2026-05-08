@@ -13,7 +13,7 @@ interface CourtPickerProps {
 
 /**
  * Affiche les terrains disponibles pour un créneau donné.
- * Mock : 1 terrain sur 2 indisponible.
+ * Compact, optimisé pour une colonne étroite.
  */
 export default function CourtPicker({
   date,
@@ -26,53 +26,44 @@ export default function CourtPicker({
   const courts = getCourtsForSlot(date, slotIndex, totalCourts);
 
   return (
-    <div>
-      <div className="flex items-center gap-3 mb-4">
-        <span className="w-2 h-2 rounded-full bg-white/40" />
-        <h4 className="font-extrabold uppercase tracking-wider text-sm">
-          Terrains disponibles
-        </h4>
-      </div>
+    <div className="grid grid-cols-2 gap-3">
+      {courts.map((court) => {
+        const isSelected = selectedCourt === court.number;
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        {courts.map((court) => {
-          const isSelected = selectedCourt === court.number;
+        let classes =
+          'aspect-square rounded-xl border-2 flex flex-col items-center justify-center transition-all duration-200 p-2';
+        if (!court.available) {
+          classes +=
+            ' border-white/10 bg-white/[0.02] text-white/30 cursor-not-allowed';
+        } else if (isSelected) {
+          const sel =
+            accent === 'blue'
+              ? 'border-brand-blue bg-brand-blue/10'
+              : 'border-brand-green bg-brand-green/10';
+          classes += ` ${sel}`;
+        } else {
+          classes +=
+            ' border-white/15 hover:border-white/40 hover:bg-white/5 cursor-pointer';
+        }
 
-          let classes =
-            'aspect-square rounded-xl border-2 flex flex-col items-center justify-center transition-all duration-200';
-          if (!court.available) {
-            classes +=
-              ' border-white/10 bg-white/[0.02] text-white/30 cursor-not-allowed';
-          } else if (isSelected) {
-            const sel =
-              accent === 'blue'
-                ? 'border-brand-blue bg-brand-blue/10'
-                : 'border-brand-green bg-brand-green/10';
-            classes += ` ${sel}`;
-          } else {
-            classes +=
-              ' border-white/15 hover:border-white/40 hover:bg-white/5 cursor-pointer';
-          }
-
-          return (
-            <button
-              key={court.number}
-              type="button"
-              onClick={() => court.available && onSelect(court.number)}
-              disabled={!court.available}
-              className={classes}
-            >
-              <CourtIcon className={court.available ? 'text-white' : 'text-white/30'} />
-              <div className="text-base font-extrabold mt-2">
-                Court {court.number}
-              </div>
-              <div className="text-[10px] uppercase tracking-widest text-white/50 mt-1">
-                {court.available ? 'Disponible' : 'Pris'}
-              </div>
-            </button>
-          );
-        })}
-      </div>
+        return (
+          <button
+            key={court.number}
+            type="button"
+            onClick={() => court.available && onSelect(court.number)}
+            disabled={!court.available}
+            className={classes}
+          >
+            <CourtIcon className={court.available ? 'text-white' : 'text-white/30'} />
+            <div className="text-sm font-extrabold mt-1.5">
+              Court {court.number}
+            </div>
+            <div className="text-[9px] uppercase tracking-widest text-white/50 mt-0.5">
+              {court.available ? 'Disponible' : 'Pris'}
+            </div>
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -80,17 +71,14 @@ export default function CourtPicker({
 function CourtIcon({ className = '' }: { className?: string }) {
   return (
     <svg
-      className={`w-7 h-7 ${className}`}
+      className={`w-6 h-6 ${className}`}
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
       strokeWidth={1.5}
     >
-      {/* Rectangle du terrain */}
       <rect x="3" y="5" width="18" height="14" rx="1" />
-      {/* Filet central */}
       <line x1="12" y1="5" x2="12" y2="19" strokeDasharray="2 1" />
-      {/* Lignes de service */}
       <line x1="3" y1="9" x2="21" y2="9" strokeOpacity="0.5" />
       <line x1="3" y1="15" x2="21" y2="15" strokeOpacity="0.5" />
     </svg>
