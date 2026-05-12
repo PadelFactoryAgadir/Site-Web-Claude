@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useLocale } from 'next-intl';
 import CalendarPicker from './CalendarPicker';
 import SlotPicker from './SlotPicker';
 import CourtPicker from './CourtPicker';
@@ -21,18 +22,8 @@ interface ReservationFlowProps {
 }
 
 /**
- * Wizard de réservation en disposition 3 colonnes (desktop).
- * Sur mobile : empilement vertical.
- *
- *   ┌─────────────┬──────────────┬──────────────┐
- *   │ 1. Date     │ 2. Créneau   │ 3. Terrain   │
- *   │ (calendrier │ (slots si    │ (courts si   │
- *   │  compact)   │  date choisie│  slot choisi)│
- *   └─────────────┴──────────────┴──────────────┘
- *               ↓ (quand tout est choisi)
- *   ┌──────────────────────────────────────────┐
- *   │ 4. Récap + Coordonnées + Envoi WhatsApp │
- *   └──────────────────────────────────────────┘
+ * Wizard de réservation en 3 colonnes (desktop) / vertical (mobile).
+ * Texte traduit dynamiquement FR/EN selon la locale courante.
  */
 export default function ReservationFlow({
   clubName,
@@ -41,25 +32,24 @@ export default function ReservationFlow({
   rentalPricePerRacket,
   accent,
 }: ReservationFlowProps) {
+  const locale = useLocale();
+  const isFr = locale === 'fr';
+
   const [date, setDate] = useState<Date | null>(null);
   const [slot, setSlot] = useState<TimeSlot | null>(null);
   const [court, setCourt] = useState<number | null>(null);
   const [rackets, setRackets] = useState(0);
 
-  // Contact
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [phonePrefix, setPhonePrefix] = useState('+212');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [email, setEmail] = useState('');
 
-  // État final
   const [sent, setSent] = useState(false);
 
-  // Réf vers le bas pour scroller automatiquement quand le récap apparaît
   const summaryRef = useRef<HTMLDivElement | null>(null);
 
-  // Quand la date change, on reset le créneau et le terrain
   const handleDateChange = (d: Date) => {
     setDate(d);
     setSlot(null);
@@ -73,7 +63,6 @@ export default function ReservationFlow({
     setCourt(n);
   };
 
-  // Quand un terrain est choisi, scroller en douceur jusqu'au récap
   useEffect(() => {
     if (court !== null && summaryRef.current) {
       summaryRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -112,7 +101,7 @@ export default function ReservationFlow({
 
   const handleSend = () => {
     if (!draft || !canSend) return;
-    const link = buildWhatsappLink(draft, 'fr');
+    const link = buildWhatsappLink(draft, isFr ? 'fr' : 'en');
     window.open(link, '_blank', 'noopener,noreferrer');
     setSent(true);
   };
@@ -120,6 +109,7 @@ export default function ReservationFlow({
   if (sent) {
     return (
       <SentConfirmation
+        isFr={isFr}
         onReset={() => {
           setSent(false);
           setDate(null);
@@ -136,17 +126,17 @@ export default function ReservationFlow({
       {/* TROIS COLONNES */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Colonne 1 : Date */}
-        <Column step={1} title="Date" filled={!!date} accent={accent}>
+        <Column step={1} title={isFr ? 'Date' : 'Date'} filled={!!date} accent={accent}>
           <CalendarPicker selected={date} onSelect={handleDateChange} accent={accent} />
         </Column>
 
         {/* Colonne 2 : Créneau */}
         <Column
           step={2}
-          title="Créneau"
+          title={isFr ? 'Créneau' : 'Time slot'}
           filled={!!slot}
           accent={accent}
-          info={date ? formatDateShort(date) : null}
+          info={date ? formatDateShort(date, locale) : null}
           disabled={!date}
         >
           {date ? (
@@ -159,7 +149,11 @@ export default function ReservationFlow({
           ) : (
             <EmptyState
               icon="📅"
-              text="Sélectionnez d'abord une date dans le calendrier"
+              text={
+                isFr
+                  ? "Sélectionnez d'abord une date dans le calendrier"
+                  : 'Pick a date in the calendar first'
+              }
             />
           )}
         </Column>
@@ -167,12 +161,12 @@ export default function ReservationFlow({
         {/* Colonne 3 : Terrain */}
         <Column
           step={3}
-          title="Terrain"
+          title={isFr ? 'Terrain' : 'Court'}
           filled={court !== null}
           accent={accent}
           info={
             date && slot
-              ? `${formatDateShort(date)} · ${slot.start}—${slot.end}`
+              ? `${formatDateShort(date, locale)} · ${slot.start}—${slot.end}`
               : null
           }
           disabled={!slot}
@@ -189,13 +183,17 @@ export default function ReservationFlow({
           ) : (
             <EmptyState
               icon="🎾"
-              text="Sélectionnez d'abord un créneau"
+              text={
+                isFr
+                  ? "Sélectionnez d'abord un créneau"
+                  : 'Pick a time slot first'
+              }
             />
           )}
         </Column>
       </div>
 
-      {/* SECTION DU BAS : récap + raquettes + formulaire + envoi */}
+      {/* SECTION DU BAS : récap + raquettes + form + envoi */}
       {draft && (
         <div ref={summaryRef} className="mt-12 scroll-mt-24 animate-slide-up">
           <BottomFlow
@@ -216,6 +214,8 @@ export default function ReservationFlow({
             accent={accent}
             canSend={canSend}
             onSend={handleSend}
+            isFr={isFr}
+            locale={locale}
           />
         </div>
       )}
@@ -248,9 +248,7 @@ function Column({
   const accentText = accent === 'green' ? 'text-black' : 'text-white';
 
   return (
-    <div
-      className={`card p-5 transition-opacity ${disabled ? 'opacity-50' : ''}`}
-    >
+    <div className={`card p-5 transition-opacity ${disabled ? 'opacity-50' : ''}`}>
       <div className="flex items-center gap-3 mb-4">
         <div
           className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-black flex-shrink-0 ${
@@ -282,16 +280,16 @@ function EmptyState({ icon, text }: { icon: string; text: string }) {
   );
 }
 
-function formatDateShort(date: Date): string {
-  return new Intl.DateTimeFormat('fr-FR', {
+function formatDateShort(date: Date, locale: string): string {
+  return new Intl.DateTimeFormat(locale === 'fr' ? 'fr-FR' : 'en-US', {
     weekday: 'short',
     day: 'numeric',
     month: 'short',
   }).format(date);
 }
 
-function formatDateLong(date: Date): string {
-  return new Intl.DateTimeFormat('fr-FR', {
+function formatDateLong(date: Date, locale: string): string {
+  return new Intl.DateTimeFormat(locale === 'fr' ? 'fr-FR' : 'en-US', {
     weekday: 'long',
     day: 'numeric',
     month: 'long',
@@ -321,31 +319,20 @@ interface BottomFlowProps {
   accent: 'blue' | 'green';
   canSend: boolean;
   onSend: () => void;
+  isFr: boolean;
+  locale: string;
 }
 
 function BottomFlow(props: BottomFlowProps) {
   const {
-    draft,
-    rackets,
-    setRackets,
-    rentalPricePerRacket,
-    firstName,
-    setFirstName,
-    lastName,
-    setLastName,
-    phonePrefix,
-    setPhonePrefix,
-    phoneNumber,
-    setPhoneNumber,
-    email,
-    setEmail,
-    accent,
-    canSend,
-    onSend,
+    draft, rackets, setRackets, rentalPricePerRacket,
+    firstName, setFirstName, lastName, setLastName,
+    phonePrefix, setPhonePrefix, phoneNumber, setPhoneNumber,
+    email, setEmail, accent, canSend, onSend, isFr, locale,
   } = props;
 
   const price = calculatePrice(draft);
-  const message = buildWhatsappMessage(draft, 'fr');
+  const message = buildWhatsappMessage(draft, isFr ? 'fr' : 'en');
   const accentBg = accent === 'blue' ? 'bg-brand-blue' : 'bg-brand-green';
   const accentTextSel = accent === 'green' ? 'text-black' : 'text-white';
   const accentTotalText =
@@ -353,35 +340,41 @@ function BottomFlow(props: BottomFlowProps) {
 
   return (
     <div className="space-y-4">
-      {/* RÉCAP TOP : ce qu'on a sélectionné (1 ligne) */}
+      {/* RÉCAP TOP */}
       <div
         className={`card p-4 border-l-4 ${
           accent === 'blue' ? 'border-l-brand-blue' : 'border-l-brand-green'
         }`}
       >
         <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-brand-lime mb-2">
-          Votre sélection
+          {isFr ? 'Votre sélection' : 'Your selection'}
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <RecapItem label="Date" value={formatDateLong(draft.date)} />
           <RecapItem
-            label="Créneau"
+            label={isFr ? 'Date' : 'Date'}
+            value={formatDateLong(draft.date, locale)}
+          />
+          <RecapItem
+            label={isFr ? 'Créneau' : 'Time slot'}
             value={`${draft.slot.start} - ${draft.slot.end}`}
           />
-          <RecapItem label="Terrain" value={`Court ${draft.courtNumber}`} />
+          <RecapItem
+            label={isFr ? 'Terrain' : 'Court'}
+            value={`Court ${draft.courtNumber}`}
+          />
         </div>
       </div>
 
-      {/* TROIS SOUS-COLONNES : Estimation | Coordonnées | Aperçu+Bouton */}
+      {/* TROIS SOUS-COLONNES */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* COLONNE 1 : Raquettes + Estimation tarifaire */}
+        {/* COLONNE 1 : Raquettes + Estimation */}
         <div className="space-y-4">
           <div className="card p-5">
             <h4 className="font-extrabold uppercase tracking-wider text-sm mb-1">
-              Raquettes
+              {isFr ? 'Raquettes' : 'Rackets'}
             </h4>
             <p className="text-[11px] text-white/60 mb-3">
-              {rentalPricePerRacket} DHS l'unité
+              {rentalPricePerRacket} DHS {isFr ? "l'unité" : 'each'}
             </p>
             <div className="grid grid-cols-5 gap-1.5">
               {[0, 1, 2, 3, 4].map((n) => (
@@ -403,12 +396,12 @@ function BottomFlow(props: BottomFlowProps) {
 
           <div className="card p-5">
             <h4 className="font-extrabold uppercase tracking-wider text-sm text-brand-lime mb-3">
-              Estimation tarifaire
+              {isFr ? 'Estimation tarifaire' : 'Price estimate'}
             </h4>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between text-white/80 gap-2">
                 <span className="text-xs">
-                  Terrain ({draft.slot.start}—{draft.slot.end})
+                  {isFr ? 'Terrain' : 'Court'} ({draft.slot.start}—{draft.slot.end})
                 </span>
                 <span className="font-bold whitespace-nowrap">
                   {price.court} DHS
@@ -416,7 +409,9 @@ function BottomFlow(props: BottomFlowProps) {
               </div>
               {draft.rackets > 0 && (
                 <div className="flex justify-between text-white/80">
-                  <span className="text-xs">Raquettes × {draft.rackets}</span>
+                  <span className="text-xs">
+                    {isFr ? 'Raquettes' : 'Rackets'} × {draft.rackets}
+                  </span>
                   <span className="font-bold whitespace-nowrap">
                     {price.rackets} DHS
                   </span>
@@ -436,19 +431,19 @@ function BottomFlow(props: BottomFlowProps) {
         {/* COLONNE 2 : Coordonnées */}
         <div className="card p-5">
           <h4 className="font-extrabold uppercase tracking-wider text-sm mb-4">
-            Vos coordonnées
+            {isFr ? 'Vos coordonnées' : 'Your details'}
           </h4>
           <div className="space-y-3">
             <div className="grid grid-cols-2 gap-2">
               <Field
-                label="Prénom"
+                label={isFr ? 'Prénom' : 'First name'}
                 value={firstName}
                 onChange={setFirstName}
                 placeholder="Nacer"
                 required
               />
               <Field
-                label="Nom"
+                label={isFr ? 'Nom' : 'Last name'}
                 value={lastName}
                 onChange={setLastName}
                 placeholder="Benzekri"
@@ -458,14 +453,14 @@ function BottomFlow(props: BottomFlowProps) {
 
             <div>
               <label className="block text-[10px] font-bold uppercase tracking-widest text-white/60 mb-1.5">
-                Téléphone *
+                {isFr ? 'Téléphone' : 'Phone'} *
               </label>
               <div className="flex gap-2">
                 <select
                   value={phonePrefix}
                   onChange={(e) => setPhonePrefix(e.target.value)}
                   className="bg-black border border-white/15 rounded-lg px-2 py-2.5 text-white text-sm focus:border-white/50 focus:outline-none transition"
-                  aria-label="Indicatif"
+                  aria-label={isFr ? 'Indicatif' : 'Country code'}
                 >
                   <option value="+212">🇲🇦 +212</option>
                   <option value="+33">🇫🇷 +33</option>
@@ -496,20 +491,22 @@ function BottomFlow(props: BottomFlowProps) {
               type="email"
               value={email}
               onChange={setEmail}
-              placeholder="exemple@email.com"
+              placeholder={isFr ? 'exemple@email.com' : 'example@email.com'}
               required
             />
           </div>
         </div>
 
-        {/* COLONNE 3 : Aperçu du message + Avertissement + Bouton */}
+        {/* COLONNE 3 : Aperçu + Avertissement + Bouton */}
         <div className="space-y-4">
           <div className="card p-5">
             <h4 className="font-extrabold uppercase tracking-wider text-sm mb-2">
-              Aperçu du message
+              {isFr ? 'Aperçu du message' : 'Message preview'}
             </h4>
             <p className="text-[11px] text-white/50 mb-3">
-              Le message envoyé au club via WhatsApp
+              {isFr
+                ? 'Le message envoyé au club via WhatsApp'
+                : 'The message sent to the club via WhatsApp'}
             </p>
             <pre className="bg-black/50 border border-white/10 rounded-lg p-3 text-[11px] text-white/80 whitespace-pre-wrap font-mono leading-relaxed max-h-44 overflow-auto">
               {message}
@@ -523,13 +520,24 @@ function BottomFlow(props: BottomFlowProps) {
               </div>
               <div>
                 <h4 className="font-extrabold uppercase tracking-wider text-brand-lime text-xs mb-1.5">
-                  Important
+                  {isFr ? 'Important' : 'Important'}
                 </h4>
                 <p className="text-xs text-white leading-relaxed">
-                  Votre réservation <strong>n'est PAS confirmée</strong> tant
-                  que le club ne vous a pas explicitement répondu sur WhatsApp.
-                  <strong> Attendez bien la réponse</strong>, sans quoi le
-                  créneau peut être pris par un autre joueur.
+                  {isFr ? (
+                    <>
+                      Votre réservation <strong>n&apos;est PAS confirmée</strong> tant
+                      que le club ne vous a pas explicitement répondu sur WhatsApp.
+                      <strong> Attendez bien la réponse</strong>, sans quoi le
+                      créneau peut être pris par un autre joueur.
+                    </>
+                  ) : (
+                    <>
+                      Your booking is <strong>NOT confirmed</strong> until the
+                      club has explicitly replied to you on WhatsApp.
+                      <strong> Wait for their reply</strong>, otherwise the
+                      slot could be taken by another player.
+                    </>
+                  )}
                 </p>
               </div>
             </div>
@@ -546,12 +554,14 @@ function BottomFlow(props: BottomFlowProps) {
             }`}
           >
             <WhatsAppIcon />
-            Envoyer au club
+            {isFr ? 'Envoyer au club' : 'Send to the club'}
           </button>
 
           {!canSend && (
             <p className="text-center text-[11px] text-white/50">
-              Complétez vos coordonnées pour activer l'envoi.
+              {isFr
+                ? "Complétez vos coordonnées pour activer l'envoi."
+                : 'Fill in your details to enable sending.'}
             </p>
           )}
         </div>
@@ -604,7 +614,7 @@ function Field({
   );
 }
 
-function SentConfirmation({ onReset }: { onReset: () => void }) {
+function SentConfirmation({ isFr, onReset }: { isFr: boolean; onReset: () => void }) {
   return (
     <div className="card p-8 sm:p-12 text-center">
       <div className="w-20 h-20 rounded-full bg-brand-lime/20 flex items-center justify-center mx-auto mb-6">
@@ -620,23 +630,34 @@ function SentConfirmation({ onReset }: { onReset: () => void }) {
       </div>
 
       <h3 className="text-2xl sm:text-3xl font-black uppercase tracking-tight mb-3">
-        Message envoyé au club
+        {isFr ? 'Message envoyé au club' : 'Message sent to the club'}
       </h3>
 
       <p className="text-white/70 max-w-md mx-auto leading-relaxed mb-6">
-        Une conversation WhatsApp avec le club vient de s'ouvrir. Vérifiez bien
-        que vous avez cliqué sur "Envoyer" dans WhatsApp pour finaliser votre demande.
+        {isFr
+          ? 'Une conversation WhatsApp avec le club vient de s\'ouvrir. Vérifiez bien que vous avez cliqué sur "Envoyer" dans WhatsApp pour finaliser votre demande.'
+          : 'A WhatsApp conversation with the club just opened. Make sure you clicked "Send" in WhatsApp to finalize your request.'}
       </p>
 
       <div className="rounded-2xl border-2 border-brand-lime bg-brand-lime/10 p-5 text-left max-w-2xl mx-auto mb-8">
         <p className="text-sm text-white leading-relaxed">
           <strong className="text-brand-lime uppercase tracking-wider text-xs block mb-2">
-            ⚠️ Rappel important
+            ⚠️ {isFr ? 'Rappel important' : 'Important reminder'}
           </strong>
-          Votre réservation devient <strong>définitive uniquement</strong> quand
-          le club vous renvoie un message de confirmation par WhatsApp. Restez
-          attentif à la réponse, sans quoi le créneau peut être pris par
-          quelqu'un d'autre.
+          {isFr ? (
+            <>
+              Votre réservation devient <strong>définitive uniquement</strong>{' '}
+              quand le club vous renvoie un message de confirmation par WhatsApp.
+              Restez attentif à la réponse, sans quoi le créneau peut être pris
+              par quelqu&apos;un d&apos;autre.
+            </>
+          ) : (
+            <>
+              Your booking becomes <strong>final only</strong> when the club
+              sends you a confirmation message via WhatsApp. Stay alert for
+              their reply, otherwise the slot could be taken by someone else.
+            </>
+          )}
         </p>
       </div>
 
@@ -645,7 +666,7 @@ function SentConfirmation({ onReset }: { onReset: () => void }) {
         onClick={onReset}
         className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-white/20 text-white font-semibold uppercase tracking-wider hover:bg-white hover:text-black transition"
       >
-        Faire une autre réservation
+        {isFr ? 'Faire une autre réservation' : 'Make another booking'}
       </button>
     </div>
   );

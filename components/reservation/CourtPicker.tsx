@@ -1,5 +1,6 @@
 'use client';
 
+import { useLocale } from 'next-intl';
 import { getCourtsForSlot } from '@/lib/availability';
 
 interface CourtPickerProps {
@@ -11,10 +12,6 @@ interface CourtPickerProps {
   accent: 'blue' | 'green';
 }
 
-/**
- * Affiche les terrains disponibles pour un créneau donné.
- * Compact, optimisé pour une colonne étroite.
- */
 export default function CourtPicker({
   date,
   slotIndex,
@@ -23,6 +20,8 @@ export default function CourtPicker({
   onSelect,
   accent,
 }: CourtPickerProps) {
+  const locale = useLocale();
+  const isFr = locale === 'fr';
   const courts = getCourtsForSlot(date, slotIndex, totalCourts);
 
   return (
@@ -59,7 +58,13 @@ export default function CourtPicker({
               Court {court.number}
             </div>
             <div className="text-[9px] uppercase tracking-widest text-white/50 mt-0.5">
-              {court.available ? 'Disponible' : 'Pris'}
+              {court.available
+                ? isFr
+                  ? 'Disponible'
+                  : 'Available'
+                : isFr
+                ? 'Pris'
+                : 'Taken'}
             </div>
           </button>
         );

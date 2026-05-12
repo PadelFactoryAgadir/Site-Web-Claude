@@ -1,5 +1,6 @@
 'use client';
 
+import { useLocale } from 'next-intl';
 import {
   getSlotsForDate,
   isPeakDay,
@@ -14,16 +15,15 @@ interface SlotPickerProps {
   accent: 'blue' | 'green';
 }
 
-/**
- * Affiche les créneaux disponibles pour une date donnée.
- * Compact, optimisé pour une colonne étroite.
- */
 export default function SlotPicker({
   date,
   selectedSlotIndex,
   onSelect,
   accent,
 }: SlotPickerProps) {
+  const locale = useLocale();
+  const isFr = locale === 'fr';
+
   const slots = getSlotsForDate(date);
   const offPeak = slots.filter((s) => s.kind === 'off-peak');
   const peak = slots.filter((s) => s.kind === 'peak');
@@ -33,27 +33,37 @@ export default function SlotPicker({
     <div className="space-y-5">
       {!allPeak && offPeak.length > 0 && (
         <SlotGroup
-          title="Heures creuses"
-          subtitle="Lun-Ven hors fériés"
+          title={isFr ? 'Heures creuses' : 'Off-peak'}
+          subtitle={isFr ? 'Lun-Ven hors fériés' : 'Mon-Fri, no holidays'}
           color="white"
           slots={offPeak}
           date={date}
           selectedSlotIndex={selectedSlotIndex}
           onSelect={onSelect}
           accent={accent}
+          isFr={isFr}
         />
       )}
 
       {peak.length > 0 && (
         <SlotGroup
-          title="Heures pleines"
-          subtitle={allPeak ? 'WE / férié' : 'En soirée'}
+          title={isFr ? 'Heures pleines' : 'Peak hours'}
+          subtitle={
+            allPeak
+              ? isFr
+                ? 'WE / férié'
+                : 'Weekend / holiday'
+              : isFr
+              ? 'En soirée'
+              : 'Evenings'
+          }
           color="lime"
           slots={peak}
           date={date}
           selectedSlotIndex={selectedSlotIndex}
           onSelect={onSelect}
           accent={accent}
+          isFr={isFr}
         />
       )}
     </div>
@@ -69,6 +79,7 @@ interface SlotGroupProps {
   selectedSlotIndex: number | null;
   onSelect: (slot: TimeSlot) => void;
   accent: 'blue' | 'green';
+  isFr: boolean;
 }
 
 function SlotGroup({
@@ -80,6 +91,7 @@ function SlotGroup({
   selectedSlotIndex,
   onSelect,
   accent,
+  isFr,
 }: SlotGroupProps) {
   const titleColor = color === 'lime' ? 'text-brand-lime' : 'text-white';
   const dotColor = color === 'lime' ? 'bg-brand-lime' : 'bg-white';
@@ -129,7 +141,11 @@ function SlotGroup({
                 {slot.start}—{slot.end}
               </div>
               <div className="text-[10px] text-white/60 mt-0.5">
-                {available ? `${slot.pricePerCourt} DHS` : 'Indispo'}
+                {available
+                  ? `${slot.pricePerCourt} DHS`
+                  : isFr
+                  ? 'Indispo'
+                  : 'Taken'}
               </div>
             </button>
           );

@@ -1,4 +1,4 @@
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import Logo from './Logo';
 import { AGADIR, UNIVERSIAPOLIS, SITE, SOCIAL } from '@/lib/business-info';
@@ -12,6 +12,8 @@ export default function Footer() {
   const tNav = useTranslations('Nav');
   const tFooter = useTranslations('Footer');
   const tMeta = useTranslations('Metadata');
+  const locale = useLocale();
+  const isFr = locale === 'fr';
 
   const year = new Date().getFullYear();
 
@@ -26,7 +28,11 @@ export default function Footer() {
               {tMeta('description')}
             </p>
             <p className="mt-3 text-xs text-white/40">
-              1<sup>er</sup> Club de Padel d'Agadir
+              {isFr ? (
+                <>1<sup>er</sup> Club de Padel d&apos;Agadir</>
+              ) : (
+                <>1<sup>st</sup> Padel Club in Agadir</>
+              )}
             </p>
           </div>
 

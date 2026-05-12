@@ -87,10 +87,10 @@ export default async function EventsPage({
               {isFr ? 'Prochain événement' : 'Next event'}
             </div>
             <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-brand-lime mb-3">
-              [Date à venir]
+              [{isFr ? 'Date à venir' : 'Upcoming date'}]
             </p>
             <h2 className="text-3xl font-black uppercase tracking-tight mb-3">
-              [Nom du tournoi]
+              [{isFr ? 'Nom du tournoi' : 'Tournament name'}]
             </h2>
             <p className="text-white/70 leading-relaxed mb-6">
               {isFr
@@ -181,7 +181,7 @@ export default async function EventsPage({
               <div key={i} className="card overflow-hidden group cursor-pointer hover:scale-[1.02] transition">
                 <div className="aspect-[3/4] bg-zinc-900 flex flex-col items-center justify-center p-4 text-center border-b border-white/10">
                   <span className="text-white/20 text-[10px] font-mono uppercase tracking-widest mb-2">
-                    [Affiche]
+                    [{isFr ? 'Affiche' : 'Poster'}]
                   </span>
                   <span className="text-white/40 text-sm font-bold uppercase tracking-tight">
                     {name}
@@ -189,7 +189,7 @@ export default async function EventsPage({
                 </div>
                 <div className="p-3">
                   <p className="text-[10px] font-bold uppercase tracking-widest text-white/40">
-                    [Date]
+                    [{isFr ? 'Date' : 'Date'}]
                   </p>
                 </div>
               </div>

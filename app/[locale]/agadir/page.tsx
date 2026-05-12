@@ -27,6 +27,7 @@ export default async function AgadirPage({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
+  const isFr = locale === 'fr';
 
   return (
     <div>
@@ -40,20 +41,21 @@ export default async function AgadirPage({
 
         <div className="relative z-10 container-padel py-24 text-center">
           <p className="text-xs font-bold uppercase tracking-[0.4em] text-brand-blue mb-4">
-            Centre-ville d'Agadir
+            {isFr ? "Centre-ville d'Agadir" : 'Downtown Agadir'}
           </p>
           <h1 className="heading-section mb-6">Padel Factory Agadir</h1>
           <p className="text-white/70 text-lg max-w-2xl mx-auto leading-relaxed">
-            Notre club principal au cœur d'Agadir : 4 terrains dernière génération,
-            ambiance premium, communauté active toute la semaine.
+            {isFr
+              ? 'Notre club principal au cœur d\'Agadir : 4 terrains dernière génération, ambiance premium, communauté active toute la semaine.'
+              : 'Our flagship club in the heart of Agadir: 4 state-of-the-art courts, premium atmosphere, active community all week long.'}
           </p>
 
           {/* Infos rapides */}
           <div className="mt-12 grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-3xl mx-auto">
-            <Stat number="4" label="Terrains" />
-            <Stat number="9h30" label="Ouverture" />
-            <Stat number="23h" label="Fermeture" />
-            <Stat number="7/7" label="Jours" />
+            <Stat number="4" label={isFr ? 'Terrains' : 'Courts'} />
+            <Stat number="9h30" label={isFr ? 'Ouverture' : 'Opens'} />
+            <Stat number="23h" label={isFr ? 'Fermeture' : 'Closes'} />
+            <Stat number="7/7" label={isFr ? 'Jours' : 'Days'} />
           </div>
         </div>
       </section>
@@ -62,21 +64,23 @@ export default async function AgadirPage({
       <section className="py-16 sm:py-20 border-b border-white/10">
         <div className="container-padel">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-            <InfoCard icon="📍" title="Localisation">
+            <InfoCard icon="📍" title={isFr ? 'Localisation' : 'Location'}>
               {AGADIR.address.street}, Agadir
               <br />
               <span className="text-white/50 text-xs">
-                Près de Café BORJ, Carrefour Cadi Ayad
+                {isFr
+                  ? 'Près de Café BORJ, Carrefour Cadi Ayad'
+                  : 'Near Café BORJ, Carrefour Cadi Ayad'}
               </span>
             </InfoCard>
             <InfoCard icon="🅿️" title="Parking">
-              Parking disponible à proximité
+              {isFr ? 'Parking disponible à proximité' : 'Parking available nearby'}
             </InfoCard>
-            <InfoCard icon="🚿" title="Vestiaires">
-              Vestiaires + douches sur place
+            <InfoCard icon="🚿" title={isFr ? 'Vestiaires' : 'Locker rooms'}>
+              {isFr ? 'Vestiaires + douches sur place' : 'Lockers + showers on site'}
             </InfoCard>
-            <InfoCard icon="🛒" title="Shop & Café">
-              Cafétéria + boutique de matériel
+            <InfoCard icon="🛒" title={isFr ? 'Shop & Café' : 'Shop & Café'}>
+              {isFr ? 'Cafétéria + boutique de matériel' : 'Cafeteria + equipment shop'}
             </InfoCard>
           </div>
 
@@ -93,7 +97,9 @@ export default async function AgadirPage({
       {/* Galerie placeholder */}
       <section className="py-16 sm:py-20 border-b border-white/10">
         <div className="container-padel">
-          <h2 className="heading-section text-center mb-12">Le club en images</h2>
+          <h2 className="heading-section text-center mb-12">
+            {isFr ? 'Le club en images' : 'The club in pictures'}
+          </h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {Array.from({ length: 8 }).map((_, i) => (
               <div
@@ -101,31 +107,33 @@ export default async function AgadirPage({
                 className="aspect-square rounded-xl bg-zinc-900 border border-white/10 flex items-center justify-center"
               >
                 <span className="text-white/20 text-xs font-mono uppercase tracking-widest text-center px-2">
-                  [Photo {i + 1}]
+                  [{isFr ? 'Photo' : 'Photo'} {i + 1}]
                 </span>
               </div>
             ))}
           </div>
           <p className="text-center text-white/40 text-sm mt-6">
-            Les photos seront ajoutées dès que tu me les fournis.
+            {isFr
+              ? 'Les photos seront ajoutées dès que tu me les fournis.'
+              : 'Photos will be added soon.'}
           </p>
         </div>
       </section>
 
       {/* RÉSERVATION */}
-      <section
-        id="reservation"
-        className="py-16 sm:py-24 scroll-mt-24"
-      >
+      <section id="reservation" className="py-16 sm:py-24 scroll-mt-24">
         <div className="container-padel max-w-5xl">
           <div className="text-center mb-12">
             <p className="text-xs font-bold uppercase tracking-[0.4em] text-brand-lime mb-4">
-              Réservation en ligne
+              {isFr ? 'Réservation en ligne' : 'Online booking'}
             </p>
-            <h2 className="heading-section">Réservez votre terrain</h2>
+            <h2 className="heading-section">
+              {isFr ? 'Réservez votre terrain' : 'Book your court'}
+            </h2>
             <p className="mt-6 text-white/70 max-w-2xl mx-auto leading-relaxed">
-              Choisissez votre date, votre créneau, votre terrain — votre
-              demande est envoyée au club par WhatsApp pour confirmation.
+              {isFr
+                ? 'Choisissez votre date, votre créneau, votre terrain — votre demande est envoyée au club par WhatsApp pour confirmation.'
+                : 'Pick your date, your slot, your court — your request is sent to the club via WhatsApp for confirmation.'}
             </p>
           </div>
 

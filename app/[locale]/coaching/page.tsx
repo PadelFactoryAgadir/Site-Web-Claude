@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
-import { Link } from '@/i18n/routing';
 import { AGADIR } from '@/lib/business-info';
 
 export async function generateMetadata({
@@ -13,10 +12,77 @@ export async function generateMetadata({
   return {
     title: isFr ? 'Coaching & Padel Factory School' : 'Coaching & Padel Factory School',
     description: isFr
-      ? 'Cours privés, école enfants, préparation compétition, événements internes. Découvrez nos programmes de coaching à Padel Factory Agadir.'
-      : 'Private lessons, kids school, competition prep, internal events. Discover our coaching programs at Padel Factory Agadir.',
+      ? 'Cours privés, école enfants dès 4 ans, préparation compétition, événements sur mesure. Découvrez nos coachs Hicham, Imad et Mehdi à Padel Factory Agadir.'
+      : 'Private lessons, kids school from age 4, competition prep, custom events. Meet our coaches Hicham, Imad and Mehdi at Padel Factory Agadir.',
   };
 }
+
+// Données réelles des 3 coachs Padel Factory
+const COACHES = [
+  {
+    name: 'Hicham Majdoubi',
+    title: { fr: 'Federal Coach', en: 'Federal Coach' },
+    rank: { fr: 'Former Top 40', en: 'Former Top 40' },
+    bio: {
+      fr: [
+        'Coach National de Padel au Maroc & en France',
+        'Sélectionné pour l\'Équipe Nationale de Padel',
+        '+10 ans d\'expérience en coaching Padel',
+      ],
+      en: [
+        'National Padel Coach in Morocco & France',
+        'Selected for the National Padel Team',
+        '+10 years of experience in Padel coaching',
+      ],
+    },
+    price: 500,
+    duration: { fr: '1 heure (individuel)', en: '1-hour session (individual)' },
+    phone: '+212 6 61 08 96 85',
+    whatsapp: 'https://wa.me/212661089685',
+  },
+  {
+    name: 'Imad Majdoubi',
+    title: { fr: 'Federal Coach', en: 'Federal Coach' },
+    rank: { fr: 'Former Top 40', en: 'Former Top 40' },
+    bio: {
+      fr: [
+        'Ancien joueur de tennis professionnel (ITF)',
+        '20 ans d\'expérience en coaching tennis',
+        'Federal Coach — Maroc',
+      ],
+      en: [
+        'Former professional tennis player (ITF)',
+        '20 years of experience in tennis coaching',
+        'Federal Coach — Morocco',
+      ],
+    },
+    price: 450,
+    duration: { fr: '1 heure (individuel)', en: '1-hour session (individual)' },
+    phone: '+212 6 36 03 89 53',
+    whatsapp: 'https://wa.me/212636038953',
+  },
+  {
+    name: 'Mehdi Mazouz',
+    title: { fr: 'Coach', en: 'Coach' },
+    rank: { fr: 'Former Top 20', en: 'Former Top 20' },
+    bio: {
+      fr: [
+        'Double Champion Arabe de Tennis',
+        'Sélectionneur et coach de l\'Équipe Spéciale Olympics Tennis 2022',
+        'Formation Federal Coach en cours',
+      ],
+      en: [
+        'Two-time Arab Tennis Champion',
+        'Selector and coach for the Special Olympics Tennis 2022 Team',
+        'Federal Coach training in progress',
+      ],
+    },
+    price: 400,
+    duration: { fr: '1 heure (individuel)', en: '1-hour session (individual)' },
+    phone: '+212 6 31 30 76 21',
+    whatsapp: 'https://wa.me/212631307621',
+  },
+];
 
 export default async function CoachingPage({
   params,
@@ -40,9 +106,7 @@ export default async function CoachingPage({
           <p className="text-xs font-bold uppercase tracking-[0.4em] text-brand-lime mb-4">
             {isFr ? 'Coaching & Académie' : 'Coaching & Academy'}
           </p>
-          <h1 className="heading-section mb-6">
-            {isFr ? 'Padel Factory School' : 'Padel Factory School'}
-          </h1>
+          <h1 className="heading-section mb-6">Padel Factory School</h1>
           <p className="text-white/70 text-lg leading-relaxed">
             {isFr
               ? 'Progressez à votre rythme, du premier set au tournoi international. Nos coachs vous accompagnent.'
@@ -73,14 +137,14 @@ export default async function CoachingPage({
                 isFr
                   ? [
                       'Adapté à votre niveau (débutant → confirmé)',
-                      'Plan personnalisé sur 4 à 8 séances',
-                      'Suivi vidéo et feedback technique',
+                      'Plan personnalisé sur 5 à 10 séances (tarif préférentiel)',
+                      'Sessions individuelles ou à plusieurs',
                       'Disponible sur les 2 clubs',
                     ]
                   : [
                       'Adapted to your level (beginner → advanced)',
-                      'Personal plan over 4 to 8 sessions',
-                      'Video tracking and technical feedback',
+                      'Personalized plan over 5 to 10 sessions (preferred rate)',
+                      'Individual or group sessions',
                       'Available at both clubs',
                     ]
               }
@@ -93,14 +157,14 @@ export default async function CoachingPage({
               points={
                 isFr
                   ? [
-                      'Programme enfants & ados — saison 2025/2026',
-                      'Cours collectifs en petits groupes (3 à 6 élèves)',
+                      'Programme enfants & ados — à partir de 4 ans',
+                      'Cours collectifs le mercredi et le samedi (formule au choix)',
                       'Apprentissage ludique, technique et compétition',
                       'Coachs spécialisés jeunesse',
                     ]
                   : [
-                      'Kids & teens program — 2025/2026 season',
-                      'Small group lessons (3 to 6 students)',
+                      'Kids & teens program — from age 4',
+                      'Group lessons on Wednesdays and Saturdays (formula of your choice)',
                       'Playful learning, technique and competition',
                       'Youth-specialized coaches',
                     ]
@@ -130,21 +194,21 @@ export default async function CoachingPage({
             <ProgramCard
               number="04"
               accent="blue"
-              title={isFr ? 'Événements internes' : 'Internal events'}
-              tagline={isFr ? 'Animations club & soirées thématiques' : 'Club activities & themed evenings'}
+              title={isFr ? 'Animations club & events sur mesure' : 'Club events & custom experiences'}
+              tagline={isFr ? 'Pour tous les niveaux' : 'For all levels'}
               points={
                 isFr
                   ? [
-                      'Nuits du padel, tournois flash, week-ends à thème',
-                      'Animation continue pour la communauté',
-                      'Convivialité avant tout',
-                      'Suivez-nous sur Instagram pour les annonces',
+                      'Offres corporate dédiées aux entreprises',
+                      'Animations pour tous les niveaux',
+                      'Tournois homologués par la Fédération Royale Marocaine de Tennis',
+                      'Événements sur mesure (anniversaires, team building, soirées thématiques...)',
                     ]
                   : [
-                      'Padel nights, flash tournaments, themed weekends',
-                      'Continuous activity for the community',
-                      'Conviviality first',
-                      'Follow us on Instagram for announcements',
+                      'Dedicated corporate offers for companies',
+                      'Activities for all levels',
+                      'Tournaments certified by the Royal Moroccan Tennis Federation',
+                      'Custom events (birthdays, team building, themed evenings...)',
                     ]
               }
             />
@@ -152,7 +216,7 @@ export default async function CoachingPage({
         </div>
       </section>
 
-      {/* Coachs */}
+      {/* Coachs - VRAIES DONNÉES */}
       <section className="py-20 border-b border-white/10 bg-gradient-dark">
         <div className="container-padel">
           <div className="text-center mb-12 max-w-3xl mx-auto">
@@ -160,99 +224,90 @@ export default async function CoachingPage({
               {isFr ? 'Notre équipe' : 'Our team'}
             </p>
             <h2 className="heading-section">
-              {isFr ? 'Nos coachs' : 'Our coaches'}
+              {isFr ? 'Rencontrez vos coachs' : 'Meet your coaches'}
             </h2>
             <p className="mt-6 text-white/60 max-w-2xl mx-auto leading-relaxed">
               {isFr
-                ? 'Une équipe de coachs passionnés et certifiés, prêts à vous accompagner dans votre progression.'
-                : 'A team of passionate, certified coaches, ready to support you on your journey.'}
+                ? '3 coachs certifiés, joueurs de haut niveau, à votre service pour faire progresser votre jeu.'
+                : '3 certified coaches, high-level players, at your service to improve your game.'}
             </p>
           </div>
 
-          {/* Grille coachs (placeholders) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="card overflow-hidden group">
-                <div className="aspect-[3/4] bg-zinc-900 border-b border-white/10 flex items-center justify-center">
-                  <span className="text-white/20 text-xs font-mono uppercase tracking-widest text-center px-2">
-                    [Photo coach {i}]
-                  </span>
-                </div>
-                <div className="p-5">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-brand-lime mb-2">
-                    Coach
-                  </p>
-                  <h3 className="font-extrabold uppercase tracking-tight text-lg mb-1">
-                    [Nom du coach]
-                  </h3>
-                  <p className="text-xs text-white/60 leading-relaxed">
-                    {isFr
-                      ? '[Bio courte — spécialités, années d\'expérience]'
-                      : '[Short bio — specialties, years of experience]'}
-                  </p>
-                </div>
-              </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {COACHES.map((coach, idx) => (
+              <CoachCard
+                key={coach.name}
+                coach={coach}
+                isFr={isFr}
+                index={idx}
+              />
             ))}
           </div>
-
-          <p className="mt-8 text-center text-white/40 text-sm">
-            {isFr
-              ? 'Photos et bios des coachs à venir dès que tu me les fournis.'
-              : 'Coach photos and bios coming soon.'}
-          </p>
         </div>
       </section>
 
-      {/* Comment s'inscrire */}
+      {/* Comment réserver un coaching */}
       <section className="py-20">
         <div className="container-padel max-w-3xl">
           <div className="text-center mb-12">
             <p className="text-xs font-bold uppercase tracking-[0.4em] text-brand-lime mb-3">
-              {isFr ? 'Comment s\'inscrire' : 'How to register'}
+              {isFr ? 'Réserver un coaching' : 'Book a coaching session'}
             </p>
             <h2 className="heading-section">
-              {isFr ? 'C\'est simple' : 'It\'s simple'}
+              {isFr ? "C'est simple" : "It's simple"}
             </h2>
           </div>
 
-          <div className="space-y-4">
-            <StepCard
-              number="1"
-              title={isFr ? 'Contactez-nous par WhatsApp' : 'Contact us via WhatsApp'}
-              text={isFr
-                ? 'Dites-nous votre niveau, vos disponibilités et le programme qui vous intéresse.'
-                : 'Tell us your level, your availability, and which program interests you.'}
-            />
-            <StepCard
-              number="2"
-              title={isFr ? 'Premier rendez-vous' : 'First appointment'}
-              text={isFr
-                ? 'On évalue ensemble votre niveau et on définit votre plan de progression.'
-                : 'We evaluate your level together and define your progress plan.'}
-            />
-            <StepCard
-              number="3"
-              title={isFr ? 'C\'est parti !' : 'Let\'s go!'}
-              text={isFr
-                ? 'Vous démarrez vos séances et progressez à votre rythme.'
-                : 'You start your sessions and progress at your own pace.'}
-            />
-          </div>
+          <div className="space-y-6">
+            {/* Pour un coaching : contacter le coach */}
+            <div className="card p-6 sm:p-8 border-l-4 border-l-brand-blue">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-full bg-brand-blue text-white flex items-center justify-center text-2xl flex-shrink-0">
+                  👨‍🏫
+                </div>
+                <div>
+                  <h3 className="font-extrabold uppercase tracking-tight text-xl mb-2">
+                    {isFr ? 'Pour un coaching' : 'For a coaching session'}
+                  </h3>
+                  <p className="text-white/70 leading-relaxed">
+                    {isFr
+                      ? 'Contactez directement le coach de votre choix sur WhatsApp (voir les numéros sur leurs fiches ci-dessus).'
+                      : 'Contact the coach of your choice directly on WhatsApp (phone numbers on their cards above).'}
+                  </p>
+                </div>
+              </div>
+            </div>
 
-          {/* CTA WhatsApp */}
-          <div className="mt-10 text-center">
-            <a
-              href={AGADIR.whatsappLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-black uppercase tracking-wider text-base bg-[#25D366] hover:bg-[#1eb858] text-white transition shadow-glow-green"
-            >
-              <WhatsAppIcon />
-              {isFr ? 'S\'inscrire via WhatsApp' : 'Register via WhatsApp'}
-            </a>
-            <p className="mt-3 text-xs text-white/40">
-              {AGADIR.phone}
-            </p>
+            {/* Pour les autres offres : contacter le club */}
+            <div className="card p-6 sm:p-8 border-l-4 border-l-brand-lime">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-full bg-brand-lime text-black flex items-center justify-center text-2xl flex-shrink-0">
+                  🎯
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-extrabold uppercase tracking-tight text-xl mb-2">
+                    {isFr ? 'Pour nos autres offres' : 'For our other offers'}
+                  </h3>
+                  <p className="text-white/70 leading-relaxed mb-5">
+                    {isFr
+                      ? 'École Padel Factory, préparation compétition, événements sur mesure, offres corporate, tournois homologués... Contactez directement le club Padel Factory Agadir sur WhatsApp.'
+                      : 'Padel Factory School, competition prep, custom events, corporate offers, certified tournaments... Contact Padel Factory Agadir directly on WhatsApp.'}
+                  </p>
+                  <a
+                    href={AGADIR.whatsappLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center gap-3 px-6 py-3 rounded-xl font-black uppercase tracking-wider text-sm bg-[#25D366] hover:bg-[#1eb858] text-white transition shadow-glow-green"
+                  >
+                    <WhatsAppIcon />
+                    {isFr ? 'Contacter Padel Factory Agadir' : 'Contact Padel Factory Agadir'}
+                  </a>
+                  <p className="mt-3 text-xs text-white/40">
+                    {AGADIR.phone}
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -297,17 +352,81 @@ function ProgramCard({ number, accent, title, tagline, points }: ProgramCardProp
   );
 }
 
-function StepCard({ number, title, text }: { number: string; title: string; text: string }) {
+interface CoachCardProps {
+  coach: typeof COACHES[number];
+  isFr: boolean;
+  index: number;
+}
+
+function CoachCard({ coach, isFr, index }: CoachCardProps) {
+  // 3 couleurs d'accent qui tournent pour différencier les coachs
+  const accents = ['blue', 'green', 'lime'] as const;
+  const accent = accents[index % 3];
+  const accentText =
+    accent === 'blue'
+      ? 'text-brand-blue'
+      : accent === 'green'
+      ? 'text-brand-green'
+      : 'text-brand-lime';
+  const accentBorder =
+    accent === 'blue'
+      ? 'border-l-brand-blue'
+      : accent === 'green'
+      ? 'border-l-brand-green'
+      : 'border-l-brand-lime';
+
   return (
-    <div className="card p-6 flex items-start gap-4">
-      <div className="w-10 h-10 rounded-full bg-brand-blue text-white flex items-center justify-center font-black flex-shrink-0">
-        {number}
+    <div className={`card overflow-hidden border-l-4 ${accentBorder} flex flex-col`}>
+      {/* Photo placeholder du coach */}
+      <div className="aspect-[3/4] bg-zinc-900 border-b border-white/10 flex items-center justify-center relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/40" />
+        <span className="relative text-white/20 text-xs font-mono uppercase tracking-widest text-center px-2">
+          [{isFr ? 'Photo' : 'Photo'} {coach.name}]
+        </span>
       </div>
-      <div>
-        <h3 className="font-extrabold uppercase tracking-tight text-lg mb-1">
-          {title}
+
+      {/* Contenu */}
+      <div className="p-6 flex-1 flex flex-col">
+        <p className={`text-[10px] font-bold uppercase tracking-[0.3em] ${accentText} mb-1.5`}>
+          {coach.title[isFr ? 'fr' : 'en']}
+        </p>
+        <h3 className="font-extrabold uppercase tracking-tight text-xl mb-1">
+          {coach.name}
         </h3>
-        <p className="text-sm text-white/70 leading-relaxed">{text}</p>
+        <p className="text-xs text-brand-lime font-bold uppercase tracking-wider mb-4">
+          ★ {coach.rank[isFr ? 'fr' : 'en']}
+        </p>
+
+        {/* Bio */}
+        <ul className="space-y-2 mb-5 flex-1">
+          {coach.bio[isFr ? 'fr' : 'en'].map((line, i) => (
+            <li key={i} className="flex items-start gap-2 text-xs text-white/70 leading-relaxed">
+              <span className={`${accentText} mt-0.5 flex-shrink-0`}>▸</span>
+              <span>{line}</span>
+            </li>
+          ))}
+        </ul>
+
+        {/* Tarif */}
+        <div className="bg-white/5 border border-white/10 rounded-lg p-3 mb-4">
+          <p className="text-[10px] uppercase tracking-widest text-white/50 mb-1">
+            {coach.duration[isFr ? 'fr' : 'en']}
+          </p>
+          <p className="text-2xl font-black">
+            {coach.price} <span className="text-sm font-bold text-white/60">DHS</span>
+          </p>
+        </div>
+
+        {/* Bouton WhatsApp */}
+        <a
+          href={coach.whatsapp}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center justify-center gap-2 w-full px-4 py-3 rounded-lg font-bold uppercase tracking-wider text-sm bg-[#25D366] hover:bg-[#1eb858] text-white transition"
+        >
+          <WhatsAppIcon />
+          {coach.phone}
+        </a>
       </div>
     </div>
   );

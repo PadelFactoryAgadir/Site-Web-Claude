@@ -1,30 +1,39 @@
 'use client';
 
 import { useState } from 'react';
+import { useLocale } from 'next-intl';
 import { isDayAvailable, isPeakDay, toIsoDate } from '@/lib/availability';
 
 interface CalendarPickerProps {
   selected: Date | null;
   onSelect: (date: Date) => void;
-  /** Couleur d'accent (selon le club) */
   accent: 'blue' | 'green';
 }
 
 const WEEKDAYS_FR = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
+const WEEKDAYS_EN = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 const MONTHS_FR = [
   'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
   'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre',
 ];
+const MONTHS_EN = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
+];
 
 /**
  * Calendrier mensuel compact pour choisir un jour de réservation.
- * Optimisé pour s'intégrer dans une colonne étroite.
  */
 export default function CalendarPicker({
   selected,
   onSelect,
   accent,
 }: CalendarPickerProps) {
+  const locale = useLocale();
+  const isFr = locale === 'fr';
+  const weekdays = isFr ? WEEKDAYS_FR : WEEKDAYS_EN;
+  const months = isFr ? MONTHS_FR : MONTHS_EN;
+
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
@@ -78,7 +87,7 @@ export default function CalendarPicker({
           onClick={goPrev}
           disabled={!canGoPrev}
           className="w-7 h-7 rounded-md border border-white/15 flex items-center justify-center hover:bg-white/5 disabled:opacity-30 disabled:cursor-not-allowed transition"
-          aria-label="Mois précédent"
+          aria-label={isFr ? 'Mois précédent' : 'Previous month'}
         >
           <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -86,14 +95,14 @@ export default function CalendarPicker({
         </button>
 
         <h3 className="text-sm font-extrabold uppercase tracking-tight">
-          {MONTHS_FR[viewMonth.getMonth()]} {viewMonth.getFullYear()}
+          {months[viewMonth.getMonth()]} {viewMonth.getFullYear()}
         </h3>
 
         <button
           type="button"
           onClick={goNext}
           className="w-7 h-7 rounded-md border border-white/15 flex items-center justify-center hover:bg-white/5 transition"
-          aria-label="Mois suivant"
+          aria-label={isFr ? 'Mois suivant' : 'Next month'}
         >
           <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -103,7 +112,7 @@ export default function CalendarPicker({
 
       {/* En-têtes des jours */}
       <div className="grid grid-cols-7 gap-1 mb-1.5 text-center">
-        {WEEKDAYS_FR.map((d, i) => (
+        {weekdays.map((d, i) => (
           <div
             key={i}
             className="text-[9px] uppercase tracking-widest text-white/40 font-bold py-1"
@@ -148,7 +157,7 @@ export default function CalendarPicker({
               onClick={() => available && !isPast && onSelect(date)}
               disabled={!available || isPast}
               className={`relative aspect-square rounded-md border border-transparent text-xs font-semibold flex items-center justify-center transition-all ${stateClasses}`}
-              aria-label={`${date.getDate()} ${MONTHS_FR[date.getMonth()]}`}
+              aria-label={`${date.getDate()} ${months[date.getMonth()]}`}
             >
               {date.getDate()}
               {isToday && !isSelected && (
@@ -163,15 +172,15 @@ export default function CalendarPicker({
       <div className="mt-4 pt-3 border-t border-white/10 space-y-1.5 text-[10px]">
         <div className="flex items-center gap-2 text-white/50">
           <span className={`w-2.5 h-2.5 rounded-sm ${accentBg}`} />
-          Sélectionné
+          {isFr ? 'Sélectionné' : 'Selected'}
         </div>
         <div className="flex items-center gap-2 text-white/50">
           <span className="w-2.5 h-2.5 rounded-sm ring-1 ring-brand-lime/50" />
-          Heures pleines (WE/férié)
+          {isFr ? 'Heures pleines (WE/férié)' : 'Peak hours (weekend/holiday)'}
         </div>
         <div className="flex items-center gap-2 text-white/50">
           <span className="w-2.5 h-2.5 rounded-sm bg-white/5 line-through" />
-          Complet
+          {isFr ? 'Complet' : 'Fully booked'}
         </div>
       </div>
     </div>
