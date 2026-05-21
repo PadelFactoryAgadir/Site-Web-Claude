@@ -24,6 +24,10 @@ interface ReservationFlowProps {
 /**
  * Wizard de réservation en 3 colonnes (desktop) / vertical (mobile).
  * Texte traduit dynamiquement FR/EN selon la locale courante.
+ *
+ * ⚠️ MAINTENANCE : le système de réservation en ligne est temporairement désactivé.
+ * Un message de maintenance est affiché à la place.
+ * Pour réactiver : supprimer le bloc "MAINTENANCE" ci-dessous.
  */
 export default function ReservationFlow({
   clubName,
@@ -34,6 +38,43 @@ export default function ReservationFlow({
 }: ReservationFlowProps) {
   const locale = useLocale();
   const isFr = locale === 'fr';
+
+  // ── MAINTENANCE ────────────────────────────────────────────────────────────
+  const whatsappLink = `https://wa.me/${whatsappNumber}`;
+  const accentColor = accent === 'blue' ? 'border-brand-blue' : 'border-brand-green';
+  const accentText = accent === 'blue' ? 'text-brand-blue' : 'text-brand-green';
+  const accentBg = accent === 'blue' ? 'bg-brand-blue/10' : 'bg-brand-green/10';
+
+  return (
+    <div className={`card p-8 sm:p-12 text-center border-2 ${accentColor} ${accentBg}`}>
+      <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center mx-auto mb-6">
+        <svg className={`w-8 h-8 ${accentText}`} fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+        </svg>
+      </div>
+
+      <h3 className="text-xl sm:text-2xl font-black uppercase tracking-tight mb-4">
+        {isFr ? 'Site en maintenance' : 'Website under maintenance'}
+      </h3>
+
+      <p className="text-white/70 max-w-xl mx-auto leading-relaxed mb-8 text-base">
+        {isFr
+          ? 'Le site étant actuellement en maintenance, merci de contacter directement le club sur WhatsApp pour obtenir les disponibilités et réserver.'
+          : 'The website is currently under maintenance. Please contact the club directly on WhatsApp to check availability and make a booking.'}
+      </p>
+
+      <a
+        href={whatsappLink}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex items-center justify-center gap-3 px-8 py-4 rounded-xl font-black uppercase tracking-wider text-base bg-[#25D366] hover:bg-[#1eb858] text-white hover:scale-[1.02] active:scale-[0.98] transition-all shadow-glow-green"
+      >
+        <WhatsAppIcon />
+        {isFr ? 'Contacter le club sur WhatsApp' : 'Contact the club on WhatsApp'}
+      </a>
+    </div>
+  );
+  // ── FIN MAINTENANCE ────────────────────────────────────────────────────────
 
   const [date, setDate] = useState<Date | null>(null);
   const [slot, setSlot] = useState<TimeSlot | null>(null);
