@@ -75,6 +75,19 @@ export default function ReservationFlow({
     </div>
   );
   // ── FIN MAINTENANCE ────────────────────────────────────────────────────────
+}
+
+// Le code original est conservé ci-dessous pour réactivation ultérieure
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function _ReservationFlowFull({
+  clubName,
+  totalCourts,
+  whatsappNumber,
+  rentalPricePerRacket,
+  accent,
+}: ReservationFlowProps) {
+  const locale = useLocale();
+  const isFr = locale === 'fr';
 
   const [date, setDate] = useState<Date | null>(null);
   const [slot, setSlot] = useState<TimeSlot | null>(null);
