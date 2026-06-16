@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import { setRequestLocale } from 'next-intl/server';
 import { AGADIR } from '@/lib/business-info';
 
@@ -21,6 +22,7 @@ export async function generateMetadata({
 const COACHES = [
   {
     name: 'Hicham Majdoubi',
+    photo: null,
     title: { fr: 'Federal Coach', en: 'Federal Coach' },
     rank: { fr: 'Former Top 40', en: 'Former Top 40' },
     bio: {
@@ -42,6 +44,7 @@ const COACHES = [
   },
   {
     name: 'Imad Majdoubi',
+    photo: '/coaches/imad.jpeg',
     title: { fr: 'Federal Coach', en: 'Federal Coach' },
     rank: { fr: 'Former Top 40', en: 'Former Top 40' },
     bio: {
@@ -63,6 +66,7 @@ const COACHES = [
   },
   {
     name: 'Mehdi Mazouz',
+    photo: null,
     title: { fr: 'Coach', en: 'Coach' },
     rank: { fr: 'Former Top 20', en: 'Former Top 20' },
     bio: {
@@ -377,12 +381,23 @@ function CoachCard({ coach, isFr, index }: CoachCardProps) {
 
   return (
     <div className={`card overflow-hidden border-l-4 ${accentBorder} flex flex-col`}>
-      {/* Photo placeholder du coach */}
+      {/* Photo du coach */}
       <div className="aspect-[3/4] bg-zinc-900 border-b border-white/10 flex items-center justify-center relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/40" />
-        <span className="relative text-white/20 text-xs font-mono uppercase tracking-widest text-center px-2">
-          [{isFr ? 'Photo' : 'Photo'} {coach.name}]
-        </span>
+        {coach.photo ? (
+          <Image
+            src={coach.photo}
+            alt={`Coach ${coach.name}`}
+            fill
+            className="object-cover object-top"
+          />
+        ) : (
+          <>
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/40" />
+            <span className="relative text-white/20 text-xs font-mono uppercase tracking-widest text-center px-2">
+              [{isFr ? 'Photo' : 'Photo'} {coach.name}]
+            </span>
+          </>
+        )}
       </div>
 
       {/* Contenu */}
