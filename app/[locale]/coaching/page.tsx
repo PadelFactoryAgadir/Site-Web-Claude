@@ -66,7 +66,7 @@ const COACHES = [
   },
   {
     name: 'Mehdi Mazouz',
-    photo: null,
+    photo: '/coaches/mehdi.jpeg',
     title: { fr: 'Coach', en: 'Coach' },
     rank: { fr: 'Former Top 20', en: 'Former Top 20' },
     bio: {
