@@ -177,11 +177,27 @@ export function isDayAvailableFromApi(
   const day = apiData.days.find((d) => d.date === dateStr);
   if (!day) return false;
 
-  return day.slots.some((s) => s.availableCourts.length > 0);
+  return day.slots.some((s) => s.availableCourts.length > 0 && isSlotInFuture(date, s.start));
 }
 
 /**
- * Renvoie true si le créneau a au moins un terrain disponible.
+ * Renvoie true si le créneau est dans le futur (filtre les créneaux passés du jour J).
+ */
+function isSlotInFuture(date: Date, slotStart: string): boolean {
+  const now = new Date();
+  const today = toIsoDate(now);
+  const dateStr = toIsoDate(date);
+  // Si ce n'est pas aujourd'hui, le créneau est forcément dans le futur
+  if (dateStr !== today) return true;
+  // Comparer l'heure actuelle avec l'heure de début du créneau
+  const [slotHour, slotMin] = slotStart.split(':').map(Number);
+  const slotMinutes = slotHour * 60 + slotMin;
+  const nowMinutes = now.getHours() * 60 + now.getMinutes();
+  return slotMinutes > nowMinutes;
+}
+
+/**
+ * Renvoie true si le créneau a au moins un terrain disponible ET est dans le futur.
  */
 export function isSlotAvailableFromApi(
   apiData: ApiResponse,
@@ -194,6 +210,9 @@ export function isSlotAvailableFromApi(
 
   const slot = day.slots[slotIndex];
   if (!slot) return false;
+
+  // Filtrer les créneaux déjà passés aujourd'hui
+  if (!isSlotInFuture(date, slot.start)) return false;
 
   return slot.availableCourts.length > 0;
 }
