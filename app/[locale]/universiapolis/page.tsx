@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
 import { UNIVERSIAPOLIS } from '@/lib/business-info';
 import ReservationFlow from '@/components/reservation/ReservationFlow';
+import { fetchAvailability } from '@/lib/availability';
 import MapEmbed from '@/components/MapEmbed';
 
 export async function generateMetadata({
@@ -30,6 +31,7 @@ export default async function UniversiapolisPage({
   const { locale } = await params;
   setRequestLocale(locale);
   const isFr = locale === 'fr';
+  const apiData = await fetchAvailability('universiapolis');
 
   return (
     <div>
@@ -140,10 +142,12 @@ export default async function UniversiapolisPage({
 
           <ReservationFlow
             clubName={UNIVERSIAPOLIS.name}
+            clubSlug={UNIVERSIAPOLIS.slug}
             totalCourts={UNIVERSIAPOLIS.courts}
             whatsappNumber={UNIVERSIAPOLIS.whatsapp}
             rentalPricePerRacket={UNIVERSIAPOLIS.pricing.racketRental}
             accent="green"
+            apiData={apiData}
           />
         </div>
       </section>

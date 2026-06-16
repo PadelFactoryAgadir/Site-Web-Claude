@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
 import { AGADIR } from '@/lib/business-info';
 import ReservationFlow from '@/components/reservation/ReservationFlow';
+import { fetchAvailability } from '@/lib/availability';
 import MapEmbed from '@/components/MapEmbed';
 
 export async function generateMetadata({
@@ -28,6 +29,7 @@ export default async function AgadirPage({
   const { locale } = await params;
   setRequestLocale(locale);
   const isFr = locale === 'fr';
+  const apiData = await fetchAvailability('agadir');
 
   return (
     <div>
@@ -139,10 +141,12 @@ export default async function AgadirPage({
 
           <ReservationFlow
             clubName={AGADIR.name}
+            clubSlug={AGADIR.slug}
             totalCourts={AGADIR.courts}
             whatsappNumber={AGADIR.whatsapp}
             rentalPricePerRacket={AGADIR.pricing.racketRental}
             accent="blue"
+            apiData={apiData}
           />
         </div>
       </section>
