@@ -98,8 +98,7 @@ export default function ReservationFlow({
   const isContactComplete =
     firstName.trim().length >= 2 &&
     lastName.trim().length >= 2 &&
-    phoneNumber.trim().length >= 6 &&
-    email.includes('@');
+    phoneNumber.trim().length >= 6;
 
   const canSend = draft !== null && isContactComplete;
 
@@ -416,8 +415,8 @@ function BottomFlow(props: BottomFlowProps) {
           </h4>
           <div className="space-y-3">
             <div className="grid grid-cols-2 gap-2">
-              <Field label={isFr ? 'Prénom' : 'First name'} value={firstName} onChange={setFirstName} placeholder="Nacer" required />
-              <Field label={isFr ? 'Nom' : 'Last name'} value={lastName} onChange={setLastName} placeholder="Benzekri" required />
+              <Field label={isFr ? 'Prénom' : 'First name'} value={firstName} onChange={setFirstName} placeholder={isFr ? "Karim" : "Karim"} required />
+              <Field label={isFr ? 'Nom' : 'Last name'} value={lastName} onChange={setLastName} placeholder={isFr ? "El Fassi" : "El Fassi"} required />
             </div>
             <div>
               <label className="block text-[10px] font-bold uppercase tracking-widest text-white/60 mb-1.5">
@@ -449,7 +448,7 @@ function BottomFlow(props: BottomFlowProps) {
                 />
               </div>
             </div>
-            <Field label="Email" type="email" value={email} onChange={setEmail} placeholder={isFr ? 'exemple@email.com' : 'example@email.com'} required />
+            <Field label="Email" type="email" value={email} onChange={setEmail} placeholder={isFr ? "exemple@email.com" : "example@email.com"} />
           </div>
         </div>
 
