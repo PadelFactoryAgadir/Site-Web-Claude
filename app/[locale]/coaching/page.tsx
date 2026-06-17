@@ -22,7 +22,7 @@ export async function generateMetadata({
 const COACHES = [
   {
     name: 'Hicham Majdoubi',
-    photo: null,
+    photo: '/coaches/hicham.jpeg',
     title: { fr: 'Federal Coach', en: 'Federal Coach' },
     rank: { fr: 'Former Top 40', en: 'Former Top 40' },
     bio: {
