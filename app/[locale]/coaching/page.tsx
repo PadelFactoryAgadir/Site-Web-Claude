@@ -231,16 +231,43 @@ export default async function CoachingPage({
         </div>
       </section>
 
+
+
+      {/* Comment réserver un coaching */}
+      <section className="py-20 border-b border-white/10">
+        <div className="container-padel max-w-3xl">
+          <div className="text-center mb-10">
+            <p className="text-xs font-bold uppercase tracking-[0.4em] text-brand-lime mb-3">
+              {isFr ? 'Coaching privé' : 'Private coaching'}
+            </p>
+            <h2 className="heading-section">
+              {isFr ? 'Comment réserver un coaching ?' : 'How to book a coaching session?'}
+            </h2>
+          </div>
+          <div className="card p-6 sm:p-8 border-l-4 border-l-brand-blue">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-full bg-brand-blue text-white flex items-center justify-center text-2xl flex-shrink-0">
+                👨‍🏫
+              </div>
+              <div>
+                <h3 className="font-extrabold uppercase tracking-tight text-xl mb-3">
+                  {isFr ? 'Contactez directement votre coach' : 'Contact your coach directly'}
+                </h3>
+                <p className="text-white/70 leading-relaxed">
+                  {isFr
+                    ? 'Cliquez sur le bouton WhatsApp du coach de votre choix dans les fiches ci-dessus. Vous serez mis en contact directement avec lui pour définir vos disponibilités et démarrer votre programme.'
+                    : 'Click the WhatsApp button on the coach card of your choice above. You will be put in direct contact with them to set your availability and start your program.'}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Hero Padel Factory School + vidéo */}
       <section className="relative min-h-[55vh] flex items-center justify-center overflow-hidden bg-black border-b border-white/10">
         <div className="absolute inset-0">
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="absolute inset-0 w-full h-full object-cover"
-          >
+          <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover">
             <source src="/coaching/school-hero.mp4" type="video/mp4" />
           </video>
           <div className="absolute inset-0 bg-black/60" />
@@ -265,9 +292,7 @@ export default async function CoachingPage({
             <p className="text-xs font-bold uppercase tracking-[0.4em] text-brand-lime mb-3">
               {isFr ? 'En images' : 'In pictures'}
             </p>
-            <h2 className="heading-section">
-              Padel Factory School
-            </h2>
+            <h2 className="heading-section">Padel Factory School</h2>
             <p className="mt-6 text-white/60 max-w-2xl mx-auto leading-relaxed">
               {isFr
                 ? "L'académie jeunesse de Padel Factory — apprentissage, technique et passion du padel dès 4 ans."
@@ -289,66 +314,41 @@ export default async function CoachingPage({
         </div>
       </section>
 
-      {/* Comment réserver un coaching */}
+      {/* Comment inscrire mes enfants à la School ? */}
       <section className="py-20">
         <div className="container-padel max-w-3xl">
-          <div className="text-center mb-12">
+          <div className="text-center mb-10">
             <p className="text-xs font-bold uppercase tracking-[0.4em] text-brand-lime mb-3">
-              {isFr ? 'Réserver un coaching' : 'Book a coaching session'}
+              {isFr ? 'Padel Factory School' : 'Padel Factory School'}
             </p>
             <h2 className="heading-section">
-              {isFr ? "C'est simple" : "It's simple"}
+              {isFr ? 'Comment inscrire mes enfants ?' : 'How to enroll my children?'}
             </h2>
           </div>
-
-          <div className="space-y-6">
-            {/* Pour un coaching : contacter le coach */}
-            <div className="card p-6 sm:p-8 border-l-4 border-l-brand-blue">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-full bg-brand-blue text-white flex items-center justify-center text-2xl flex-shrink-0">
-                  👨‍🏫
-                </div>
-                <div>
-                  <h3 className="font-extrabold uppercase tracking-tight text-xl mb-2">
-                    {isFr ? 'Pour un coaching' : 'For a coaching session'}
-                  </h3>
-                  <p className="text-white/70 leading-relaxed">
-                    {isFr
-                      ? 'Contactez directement le coach de votre choix sur WhatsApp (voir les numéros sur leurs fiches ci-dessus).'
-                      : 'Contact the coach of your choice directly on WhatsApp (phone numbers on their cards above).'}
-                  </p>
-                </div>
+          <div className="card p-6 sm:p-8 border-l-4 border-l-brand-lime">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-full bg-brand-lime text-black flex items-center justify-center text-2xl flex-shrink-0">
+                🎯
               </div>
-            </div>
-
-            {/* Pour les autres offres : contacter le club */}
-            <div className="card p-6 sm:p-8 border-l-4 border-l-brand-lime">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-full bg-brand-lime text-black flex items-center justify-center text-2xl flex-shrink-0">
-                  🎯
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-extrabold uppercase tracking-tight text-xl mb-2">
-                    {isFr ? 'Pour nos autres offres' : 'For our other offers'}
-                  </h3>
-                  <p className="text-white/70 leading-relaxed mb-5">
-                    {isFr
-                      ? 'École Padel Factory, préparation compétition, événements sur mesure, offres corporate, tournois homologués... Contactez directement le club Padel Factory Agadir sur WhatsApp.'
-                      : 'Padel Factory School, competition prep, custom events, corporate offers, certified tournaments... Contact Padel Factory Agadir directly on WhatsApp.'}
-                  </p>
-                  <a
-                    href={AGADIR.whatsappLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center gap-3 px-6 py-3 rounded-xl font-black uppercase tracking-wider text-sm bg-[#25D366] hover:bg-[#1eb858] text-white transition shadow-glow-green"
-                  >
-                    <WhatsAppIcon />
-                    {isFr ? 'Contacter Padel Factory Agadir' : 'Contact Padel Factory Agadir'}
-                  </a>
-                  <p className="mt-3 text-xs text-white/40">
-                    {AGADIR.phone}
-                  </p>
-                </div>
+              <div className="flex-1">
+                <h3 className="font-extrabold uppercase tracking-tight text-xl mb-3">
+                  {isFr ? 'Contactez le club directement' : 'Contact the club directly'}
+                </h3>
+                <p className="text-white/70 leading-relaxed mb-6">
+                  {isFr
+                    ? "Pour inscrire vos enfants à la Padel Factory School, contactez-nous directement sur WhatsApp. Nous vous guiderons sur les créneaux disponibles, les formules et les tarifs selon l'âge de votre enfant."
+                    : "To enroll your children in the Padel Factory School, contact us directly on WhatsApp. We will guide you on available time slots, programs and pricing based on your child's age."}
+                </p>
+                <a
+                  href={AGADIR.whatsappLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-3 px-6 py-3 rounded-xl font-black uppercase tracking-wider text-sm bg-[#25D366] hover:bg-[#1eb858] text-white transition shadow-glow-green"
+                >
+                  <WhatsAppIcon />
+                  {isFr ? 'Contacter Padel Factory Agadir' : 'Contact Padel Factory Agadir'}
+                </a>
+                <p className="mt-3 text-xs text-white/40">{AGADIR.phone}</p>
               </div>
             </div>
           </div>
