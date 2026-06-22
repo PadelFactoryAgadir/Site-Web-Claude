@@ -19,18 +19,19 @@ export default function HeroSection() {
       className="relative min-h-[100vh] flex items-center justify-center overflow-hidden bg-black"
       aria-label="Section principale"
     >
-      {/* Fond placeholder (sera remplacé par une vidéo) */}
+      {/* Vidéo hero en fond plein écran */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-black via-black to-zinc-900" />
-        <div className="absolute top-1/4 -left-20 w-96 h-96 bg-brand-blue/20 rounded-full blur-[120px]" />
-        <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-brand-green/15 rounded-full blur-[120px]" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-brand-lime/5 rounded-full blur-[100px]" />
-
-        <div className="absolute top-6 right-6 z-10 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-[10px] uppercase tracking-widest text-white/40 font-mono">
-          [Vidéo Hero — Drone / Ralenti]
-        </div>
-
-        <div className="absolute inset-0 bg-black/30" />
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+        >
+          <source src="/hero.mp4" type="video/mp4" />
+        </video>
+        {/* Overlay sombre pour lisibilité du texte */}
+        <div className="absolute inset-0 bg-black/55" />
       </div>
 
       {/* Contenu textuel */}
