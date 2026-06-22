@@ -270,7 +270,7 @@ export default async function CoachingPage({
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="relative aspect-square rounded-xl overflow-hidden bg-zinc-900 border border-white/10">
                 <Image
-                  src={`/coaching/school-${i + 1}.jpeg`}
+                  src={`/coaching/school-${i + 1}.jpg`}
                   alt={`Padel Factory School - Photo ${i + 1}`}
                   fill
                   className="object-cover hover:scale-105 transition-transform duration-500"
