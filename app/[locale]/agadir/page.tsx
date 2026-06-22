@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import { setRequestLocale } from 'next-intl/server';
 import { AGADIR } from '@/lib/business-info';
 import ReservationFlow from '@/components/reservation/ReservationFlow';
@@ -36,9 +37,14 @@ export default async function AgadirPage({
       {/* Hero club */}
       <section className="relative min-h-[60vh] flex items-center justify-center overflow-hidden bg-black border-b border-white/10">
         <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-gradient-to-br from-black via-black to-zinc-900" />
-          <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-brand-blue/20 rounded-full blur-[140px]" />
-          <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-brand-lime/5 rounded-full blur-[120px]" />
+          <Image
+            src="/photos/agadir-hero.jpg"
+            alt="Padel Factory Agadir"
+            fill
+            className="object-cover object-center"
+            priority
+          />
+          <div className="absolute inset-0 bg-black/60" />
         </div>
 
         <div className="relative z-10 container-padel py-24 text-center">
@@ -106,19 +112,17 @@ export default async function AgadirPage({
             {Array.from({ length: 8 }).map((_, i) => (
               <div
                 key={i}
-                className="aspect-square rounded-xl bg-zinc-900 border border-white/10 flex items-center justify-center"
+                className="relative aspect-square rounded-xl overflow-hidden bg-zinc-900 border border-white/10"
               >
-                <span className="text-white/20 text-xs font-mono uppercase tracking-widest text-center px-2">
-                  [{isFr ? 'Photo' : 'Photo'} {i + 1}]
-                </span>
+                <Image
+                  src={`/photos/agadir-${i + 1}.jpg`}
+                  alt={`Padel Factory Agadir - Photo ${i + 1}`}
+                  fill
+                  className="object-cover hover:scale-105 transition-transform duration-500"
+                />
               </div>
             ))}
           </div>
-          <p className="text-center text-white/40 text-sm mt-6">
-            {isFr
-              ? 'Les photos seront ajoutées dès que tu me les fournis.'
-              : 'Photos will be added soon.'}
-          </p>
         </div>
       </section>
 
