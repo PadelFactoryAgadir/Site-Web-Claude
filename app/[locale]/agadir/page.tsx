@@ -38,7 +38,7 @@ export default async function AgadirPage({
       <section className="relative min-h-[60vh] flex items-center justify-center overflow-hidden bg-black border-b border-white/10">
         <div className="absolute inset-0">
           <Image
-            src="/photos/agadir-hero.jpg"
+            src="/photos/agadir-hero.jpeg"
             alt="Padel Factory Agadir"
             fill
             className="object-cover object-center"
@@ -115,7 +115,7 @@ export default async function AgadirPage({
                 className="relative aspect-square rounded-xl overflow-hidden bg-zinc-900 border border-white/10"
               >
                 <Image
-                  src={`/photos/agadir-${i + 1}.jpg`}
+                  src={`/photos/agadir-${i + 1}.jpeg`}
                   alt={`Padel Factory Agadir - Photo ${i + 1}`}
                   fill
                   className="object-cover hover:scale-105 transition-transform duration-500"

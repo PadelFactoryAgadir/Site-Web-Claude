@@ -27,7 +27,7 @@ export default function ClubsSection() {
           <ClubCard
             href="/agadir"
             accent="blue"
-            photo="/photos/agadir-card.jpg"
+            photo="/photos/agadir-card.jpeg"
             name={t('agadir.name')}
             location={t('agadir.location')}
             courts={t('agadir.courts')}
@@ -38,7 +38,7 @@ export default function ClubsSection() {
           <ClubCard
             href="/universiapolis"
             accent="green"
-            photo="/photos/universiapolis-card.jpg"
+            photo="/photos/universiapolis-card.jpeg"
             name={t('universiapolis.name')}
             location={t('universiapolis.location')}
             courts={t('universiapolis.courts')}
