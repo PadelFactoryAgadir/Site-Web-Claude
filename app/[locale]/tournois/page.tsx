@@ -1,13 +1,10 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import { setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
 import { AGADIR, SOCIAL } from '@/lib/business-info';
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   const isFr = locale === 'fr';
   return {
@@ -18,39 +15,26 @@ export async function generateMetadata({
   };
 }
 
-// Catégories de tournois inspirées de l'Instagram @padelfactoryagadir
 const tournamentCategories = [
-  {
-    code: 'P500',
-    color: 'blue' as const,
-    descFr: 'Tournoi compétitif, premier palier officiel',
-    descEn: 'Competitive tournament, first official tier',
-  },
-  {
-    code: 'P1000',
-    color: 'lime' as const,
-    descFr: 'Tournoi compétitif élite, dotation et points renforcés',
-    descEn: 'Elite competitive tournament, enhanced prize pool and points',
-  },
-  {
-    code: 'P2000',
-    color: 'green' as const,
-    descFr: 'Tournoi premium — le niveau le plus élevé du circuit',
-    descEn: 'Premium tournament — the highest level of the circuit',
-  },
-  {
-    code: 'INTERCLUBS',
-    color: 'blue' as const,
-    descFr: 'Compétitions entre clubs marocains',
-    descEn: 'Competitions between Moroccan clubs',
-  },
+  { code: 'P500', color: 'blue' as const, descFr: 'Tournoi compétitif, premier palier officiel', descEn: 'Competitive tournament, first official tier' },
+  { code: 'P1000', color: 'lime' as const, descFr: 'Tournoi compétitif élite, dotation et points renforcés', descEn: 'Elite competitive tournament, enhanced prize pool and points' },
+  { code: 'P2000', color: 'green' as const, descFr: 'Tournoi premium — le niveau le plus élevé du circuit', descEn: 'Premium tournament — the highest level of the circuit' },
+  { code: 'INTERCLUBS', color: 'blue' as const, descFr: 'Compétitions entre clubs marocains', descEn: 'Competitions between Moroccan clubs' },
 ];
 
-export default async function EventsPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
+// Affiches tournois avec noms de fichiers
+const TOURNOIS = [
+  { file: 'tournoi-p500-hommes.jpeg', nameFr: 'P500 Hommes', nameEn: 'P500 Men' },
+  { file: 'tournoi-p1000-hommes.jpeg', nameFr: 'P1000 Hommes', nameEn: 'P1000 Men' },
+  { file: 'tournoi-p2000.jpeg', nameFr: 'P2000H', nameEn: 'P2000H' },
+  { file: 'tournoi-p1000-femmes.jpeg', nameFr: 'P1000 Femmes', nameEn: 'P1000 Women' },
+  { file: 'tournoi-volkswagen.jpeg', nameFr: 'Open Volkswagen', nameEn: 'Volkswagen Open' },
+  { file: 'tournoi-interclubs.jpeg', nameFr: 'Interclubs Casablanca', nameEn: 'Interclubs Casablanca' },
+  { file: 'tournoi-ramadan.jpeg', nameFr: 'Ramadan Cup', nameEn: 'Ramadan Cup' },
+  { file: 'tournoi-upl.jpeg', nameFr: 'UPL Tournament', nameEn: 'UPL Tournament' },
+];
+
+export default async function EventsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
   const isFr = locale === 'fr';
@@ -73,13 +57,13 @@ export default async function EventsPage({
           </h1>
           <p className="text-white/70 text-lg leading-relaxed">
             {isFr
-              ? 'Du tournoi local au P2000, en passant par les Interclubs et les soirées internes : il y en a pour tous les niveaux toute l\'année.'
-              : 'From local tournament to P2000, through Interclubs and internal evenings: there\'s something for every level all year long.'}
+              ? "Du tournoi local au P2000, en passant par les Interclubs et les soirées internes : il y en a pour tous les niveaux toute l'année."
+              : "From local tournament to P2000, through Interclubs and internal evenings: there's something for every level all year long."}
           </p>
         </div>
       </section>
 
-      {/* Prochain tournoi (à mettre à jour manuellement) */}
+      {/* Prochain tournoi */}
       <section className="py-16 border-b border-white/10">
         <div className="container-padel max-w-4xl">
           <div className="card p-8 border-2 border-brand-lime/30 relative overflow-hidden">
@@ -94,37 +78,23 @@ export default async function EventsPage({
             </h2>
             <p className="text-white/70 leading-relaxed mb-6">
               {isFr
-                ? '[Description du prochain tournoi à venir : catégorie, dotation, dates d\'inscription, niveau requis...]'
+                ? "[Description du prochain tournoi à venir : catégorie, dotation, dates d'inscription, niveau requis...]"
                 : '[Description of the next upcoming tournament: category, prize pool, registration dates, required level...]'}
             </p>
-            <p className="text-xs text-white/40 italic">
-              {isFr
-                ? 'Cette section sera mise à jour à chaque nouveau tournoi.'
-                : 'This section will be updated for each new tournament.'}
-            </p>
             <div className="mt-6 flex flex-wrap gap-3">
-              <a
-                href={AGADIR.whatsappLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-primary inline-flex"
-              >
-                {isFr ? 'S\'inscrire' : 'Register'}
+              <a href={AGADIR.whatsappLink} target="_blank" rel="noopener noreferrer" className="btn-primary inline-flex">
+                {isFr ? "S'inscrire" : 'Register'}
               </a>
-              <a
-                href={SOCIAL.instagram}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border-2 border-white/20 font-bold uppercase tracking-wider text-sm hover:bg-white hover:text-black transition"
-              >
-                {isFr ? 'Voir l\'affiche' : 'See poster'}
+              <a href={SOCIAL.instagram} target="_blank" rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border-2 border-white/20 font-bold uppercase tracking-wider text-sm hover:bg-white hover:text-black transition">
+                {isFr ? "Voir l'affiche" : 'See poster'}
               </a>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Catégories de tournois */}
+      {/* Catégories */}
       <section className="py-20 border-b border-white/10">
         <div className="container-padel">
           <div className="text-center mb-12 max-w-3xl mx-auto">
@@ -135,21 +105,15 @@ export default async function EventsPage({
               {isFr ? 'Le circuit Padel Factory' : 'The Padel Factory circuit'}
             </h2>
           </div>
-
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {tournamentCategories.map((cat) => (
-              <CategoryCard
-                key={cat.code}
-                code={cat.code}
-                color={cat.color}
-                description={isFr ? cat.descFr : cat.descEn}
-              />
+              <CategoryCard key={cat.code} code={cat.code} color={cat.color} description={isFr ? cat.descFr : cat.descEn} />
             ))}
           </div>
         </div>
       </section>
 
-      {/* Galerie des tournois passés */}
+      {/* Galerie tournois */}
       <section className="py-20 border-b border-white/10 bg-gradient-dark">
         <div className="container-padel">
           <div className="text-center mb-12 max-w-3xl mx-auto">
@@ -159,52 +123,30 @@ export default async function EventsPage({
             <h2 className="heading-section">
               {isFr ? 'Nos tournois passés' : 'Past tournaments'}
             </h2>
-            <p className="mt-6 text-white/60 max-w-2xl mx-auto leading-relaxed">
-              {isFr
-                ? 'Affiches, podiums, instants de jeu — un aperçu de ce qui s\'est passé chez nous.'
-                : 'Posters, podiums, game highlights — a glimpse of what happened here.'}
-            </p>
           </div>
-
-          {/* Grille d'affiches placeholder */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {[
-              'P500 Hommes',
-              'P1000 Hommes',
-              'P2000H',
-              'P1000 Femmes',
-              'Open Volkswagen',
-              'Interclubs Casablanca',
-              'Ramadan Cup',
-              'UPL Tournament',
-            ].map((name, i) => (
-              <div key={i} className="card overflow-hidden group cursor-pointer hover:scale-[1.02] transition">
-                <div className="aspect-[3/4] bg-zinc-900 flex flex-col items-center justify-center p-4 text-center border-b border-white/10">
-                  <span className="text-white/20 text-[10px] font-mono uppercase tracking-widest mb-2">
-                    [{isFr ? 'Affiche' : 'Poster'}]
-                  </span>
-                  <span className="text-white/40 text-sm font-bold uppercase tracking-tight">
-                    {name}
-                  </span>
+            {TOURNOIS.map((t) => (
+              <div key={t.file} className="card overflow-hidden group cursor-pointer hover:scale-[1.02] transition">
+                <div className="relative aspect-[3/4] bg-zinc-900">
+                  <Image
+                    src={`/tournois/${t.file}`}
+                    alt={isFr ? t.nameFr : t.nameEn}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
                 </div>
                 <div className="p-3">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-white/40">
-                    [{isFr ? 'Date' : 'Date'}]
+                  <p className="text-xs font-bold uppercase tracking-wider text-white/70">
+                    {isFr ? t.nameFr : t.nameEn}
                   </p>
                 </div>
               </div>
             ))}
           </div>
-
-          <p className="mt-8 text-center text-white/40 text-sm">
-            {isFr
-              ? 'Les affiches et dates des tournois seront ajoutées dès que tu me les fournis.'
-              : 'Tournament posters and dates will be added soon.'}
-          </p>
         </div>
       </section>
 
-      {/* CTA Instagram + WhatsApp */}
+      {/* CTA */}
       <section className="py-20">
         <div className="container-padel max-w-3xl text-center">
           <h2 className="heading-section mb-6">
@@ -212,25 +154,17 @@ export default async function EventsPage({
           </h2>
           <p className="text-white/70 text-lg mb-8 leading-relaxed">
             {isFr
-              ? 'Suivez-nous sur Instagram pour ne rater aucun tournoi, ou contactez-nous directement par WhatsApp pour vous inscrire.'
-              : 'Follow us on Instagram to never miss a tournament, or contact us directly via WhatsApp to register.'}
+              ? "Suivez-nous sur Instagram pour ne rater aucun tournoi, ou contactez-nous directement par WhatsApp pour vous inscrire."
+              : "Follow us on Instagram to never miss a tournament, or contact us directly via WhatsApp to register."}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <a
-              href={SOCIAL.instagram}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-black uppercase tracking-wider text-base bg-white text-black hover:bg-brand-lime transition w-full sm:w-[280px]"
-            >
+            <a href={SOCIAL.instagram} target="_blank" rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-black uppercase tracking-wider text-base bg-white text-black hover:bg-brand-lime transition w-full sm:w-[280px]">
               <InstagramIcon />
               Instagram
             </a>
-            <a
-              href={AGADIR.whatsappLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-black uppercase tracking-wider text-base bg-[#25D366] hover:bg-[#1eb858] text-white transition shadow-glow-green w-full sm:w-[280px]"
-            >
+            <a href={AGADIR.whatsappLink} target="_blank" rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-black uppercase tracking-wider text-base bg-[#25D366] hover:bg-[#1eb858] text-white transition shadow-glow-green w-full sm:w-[280px]">
               <WhatsAppIcon />
               WhatsApp
             </a>
@@ -241,33 +175,12 @@ export default async function EventsPage({
   );
 }
 
-function CategoryCard({
-  code,
-  color,
-  description,
-}: {
-  code: string;
-  color: 'blue' | 'green' | 'lime';
-  description: string;
-}) {
-  const accentText =
-    color === 'blue'
-      ? 'text-brand-blue'
-      : color === 'green'
-      ? 'text-brand-green'
-      : 'text-brand-lime';
-  const borderColor =
-    color === 'blue'
-      ? 'border-t-brand-blue'
-      : color === 'green'
-      ? 'border-t-brand-green'
-      : 'border-t-brand-lime';
-
+function CategoryCard({ code, color, description }: { code: string; color: 'blue' | 'green' | 'lime'; description: string }) {
+  const accentText = color === 'blue' ? 'text-brand-blue' : color === 'green' ? 'text-brand-green' : 'text-brand-lime';
+  const borderColor = color === 'blue' ? 'border-t-brand-blue' : color === 'green' ? 'border-t-brand-green' : 'border-t-brand-lime';
   return (
     <div className={`card p-6 border-t-4 ${borderColor}`}>
-      <p className={`text-2xl sm:text-3xl font-black uppercase tracking-tight ${accentText} mb-3`}>
-        {code}
-      </p>
+      <p className={`text-2xl sm:text-3xl font-black uppercase tracking-tight ${accentText} mb-3`}>{code}</p>
       <p className="text-sm text-white/70 leading-relaxed">{description}</p>
     </div>
   );

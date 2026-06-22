@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import { setRequestLocale } from 'next-intl/server';
 import { UNIVERSIAPOLIS } from '@/lib/business-info';
 import ReservationFlow from '@/components/reservation/ReservationFlow';
@@ -12,11 +13,8 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const isFr = locale === 'fr';
-
   return {
-    title: isFr
-      ? 'Padel Factory Universiapolis — Campus'
-      : 'Padel Factory Universiapolis — Campus',
+    title: isFr ? 'Padel Factory Universiapolis — Campus' : 'Padel Factory Universiapolis — Campus',
     description: isFr
       ? 'Réservez votre terrain au club Padel Factory Universiapolis. 3 terrains modernes au campus universitaire.'
       : 'Book your court at Padel Factory Universiapolis. 3 modern courts at the university campus.',
@@ -38,9 +36,14 @@ export default async function UniversiapolisPage({
       {/* Hero club */}
       <section className="relative min-h-[60vh] flex items-center justify-center overflow-hidden bg-black border-b border-white/10">
         <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-gradient-to-br from-black via-black to-zinc-900" />
-          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-green/20 rounded-full blur-[140px]" />
-          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-brand-lime/5 rounded-full blur-[120px]" />
+          <Image
+            src="/photos/universiapolis-hero.jpeg"
+            alt="Padel Factory Universiapolis"
+            fill
+            className="object-cover object-center"
+            priority
+          />
+          <div className="absolute inset-0 bg-black/60" />
         </div>
 
         <div className="relative z-10 container-padel py-24 text-center">
@@ -53,7 +56,6 @@ export default async function UniversiapolisPage({
               ? 'Notre club au campus Universiapolis : 3 terrains modernes, ambiance dynamique idéale pour étudiants, compétiteurs et joueurs loisirs.'
               : 'Our Universiapolis campus club: 3 modern courts, dynamic vibe ideal for students, competitors and casual players.'}
           </p>
-
           <div className="mt-12 grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-3xl mx-auto">
             <Stat number="3" label={isFr ? 'Terrains' : 'Courts'} />
             <Stat number="9h30" label={isFr ? 'Ouverture' : 'Opens'} />
@@ -71,9 +73,7 @@ export default async function UniversiapolisPage({
               {UNIVERSIAPOLIS.address.street}, Agadir
               <br />
               <span className="text-white/50 text-xs">
-                {isFr
-                  ? "Université Internationale d'Agadir"
-                  : 'Universiapolis International University'}
+                {isFr ? "Université Internationale d'Agadir" : 'Universiapolis International University'}
               </span>
             </InfoCard>
             <InfoCard icon="🅿️" title="Parking">
@@ -86,8 +86,6 @@ export default async function UniversiapolisPage({
               {isFr ? 'Étudiants, compétiteurs, loisir' : 'Students, competitors, casual'}
             </InfoCard>
           </div>
-
-          {/* Carte Google Maps */}
           <MapEmbed
             query={UNIVERSIAPOLIS.googleMapsEmbedQuery}
             mapsUrl={UNIVERSIAPOLIS.googleMapsUrl}
@@ -97,7 +95,7 @@ export default async function UniversiapolisPage({
         </div>
       </section>
 
-      {/* Galerie placeholder */}
+      {/* Galerie */}
       <section className="py-16 sm:py-20 border-b border-white/10">
         <div className="container-padel">
           <h2 className="heading-section text-center mb-12">
@@ -105,21 +103,16 @@ export default async function UniversiapolisPage({
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {Array.from({ length: 8 }).map((_, i) => (
-              <div
-                key={i}
-                className="aspect-square rounded-xl bg-zinc-900 border border-white/10 flex items-center justify-center"
-              >
-                <span className="text-white/20 text-xs font-mono uppercase tracking-widest text-center px-2">
-                  [{isFr ? 'Photo' : 'Photo'} {i + 1}]
-                </span>
+              <div key={i} className="relative aspect-square rounded-xl overflow-hidden bg-zinc-900 border border-white/10">
+                <Image
+                  src={`/photos/universiapolis-${i + 1}.jpeg`}
+                  alt={`Padel Factory Universiapolis - Photo ${i + 1}`}
+                  fill
+                  className="object-cover hover:scale-105 transition-transform duration-500"
+                />
               </div>
             ))}
           </div>
-          <p className="text-center text-white/40 text-sm mt-6">
-            {isFr
-              ? 'Les photos seront ajoutées dès que tu me les fournis.'
-              : 'Photos will be added soon.'}
-          </p>
         </div>
       </section>
 
@@ -139,7 +132,6 @@ export default async function UniversiapolisPage({
                 : 'Pick your date, your slot, your court — your request is sent to the club via WhatsApp for confirmation.'}
             </p>
           </div>
-
           <ReservationFlow
             clubName={UNIVERSIAPOLIS.name}
             clubSlug={UNIVERSIAPOLIS.slug}
@@ -159,22 +151,12 @@ function Stat({ number, label }: { number: string; label: string }) {
   return (
     <div>
       <div className="text-2xl sm:text-3xl font-black text-brand-lime">{number}</div>
-      <div className="text-[10px] uppercase tracking-widest text-white/50 mt-1">
-        {label}
-      </div>
+      <div className="text-[10px] uppercase tracking-widest text-white/50 mt-1">{label}</div>
     </div>
   );
 }
 
-function InfoCard({
-  icon,
-  title,
-  children,
-}: {
-  icon: string;
-  title: string;
-  children: React.ReactNode;
-}) {
+function InfoCard({ icon, title, children }: { icon: string; title: string; children: React.ReactNode }) {
   return (
     <div className="card p-6">
       <div className="text-3xl mb-3">{icon}</div>

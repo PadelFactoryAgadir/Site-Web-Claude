@@ -250,6 +250,37 @@ export default async function CoachingPage({
         </div>
       </section>
 
+      {/* Galerie Padel Factory School */}
+      <section className="py-20 border-b border-white/10">
+        <div className="container-padel">
+          <div className="text-center mb-12 max-w-3xl mx-auto">
+            <p className="text-xs font-bold uppercase tracking-[0.4em] text-brand-lime mb-3">
+              {isFr ? 'En images' : 'In pictures'}
+            </p>
+            <h2 className="heading-section">
+              Padel Factory School
+            </h2>
+            <p className="mt-6 text-white/60 max-w-2xl mx-auto leading-relaxed">
+              {isFr
+                ? "L'académie jeunesse de Padel Factory — apprentissage, technique et passion du padel dès 4 ans."
+                : 'The Padel Factory youth academy — learning, technique and passion for padel from age 4.'}
+            </p>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="relative aspect-square rounded-xl overflow-hidden bg-zinc-900 border border-white/10">
+                <Image
+                  src={`/coaching/school-${i + 1}.jpeg`}
+                  alt={`Padel Factory School - Photo ${i + 1}`}
+                  fill
+                  className="object-cover hover:scale-105 transition-transform duration-500"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Comment réserver un coaching */}
       <section className="py-20">
         <div className="container-padel max-w-3xl">
