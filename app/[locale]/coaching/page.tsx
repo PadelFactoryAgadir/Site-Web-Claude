@@ -99,25 +99,6 @@ export default async function CoachingPage({
 
   return (
     <article>
-      {/* Hero */}
-      <section className="relative min-h-[55vh] flex items-center justify-center overflow-hidden bg-black border-b border-white/10">
-        <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-gradient-to-br from-black via-black to-zinc-900" />
-          <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-brand-blue/15 rounded-full blur-[140px]" />
-          <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-brand-lime/10 rounded-full blur-[120px]" />
-        </div>
-        <div className="relative z-10 container-padel py-20 text-center max-w-3xl">
-          <p className="text-xs font-bold uppercase tracking-[0.4em] text-brand-lime mb-4">
-            {isFr ? 'Coaching & Académie' : 'Coaching & Academy'}
-          </p>
-          <h1 className="heading-section mb-6">Padel Factory School</h1>
-          <p className="text-white/70 text-lg leading-relaxed">
-            {isFr
-              ? 'Progressez à votre rythme, du premier set au tournoi international. Nos coachs vous accompagnent.'
-              : 'Progress at your own pace, from your first set to international tournaments. Our coaches guide you.'}
-          </p>
-        </div>
-      </section>
 
       {/* 4 Programmes */}
       <section className="py-20 border-b border-white/10">
@@ -247,6 +228,33 @@ export default async function CoachingPage({
               />
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Hero Padel Factory School + vidéo */}
+      <section className="relative min-h-[55vh] flex items-center justify-center overflow-hidden bg-black border-b border-white/10">
+        <div className="absolute inset-0">
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
+          >
+            <source src="/coaching/school-hero.mp4" type="video/mp4" />
+          </video>
+          <div className="absolute inset-0 bg-black/60" />
+        </div>
+        <div className="relative z-10 container-padel py-20 text-center max-w-3xl">
+          <p className="text-xs font-bold uppercase tracking-[0.4em] text-brand-lime mb-4">
+            {isFr ? 'Coaching & Académie' : 'Coaching & Academy'}
+          </p>
+          <h2 className="heading-section mb-6">Padel Factory School</h2>
+          <p className="text-white/70 text-lg leading-relaxed">
+            {isFr
+              ? 'Progressez à votre rythme, du premier set au tournoi international. Nos coachs vous accompagnent.'
+              : 'Progress at your own pace, from your first set to international tournaments. Our coaches guide you.'}
+          </p>
         </div>
       </section>
 
