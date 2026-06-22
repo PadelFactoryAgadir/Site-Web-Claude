@@ -1,4 +1,5 @@
 import { useTranslations } from 'next-intl';
+import Image from 'next/image';
 import { Link } from '@/i18n/routing';
 
 /**
@@ -26,6 +27,7 @@ export default function ClubsSection() {
           <ClubCard
             href="/agadir"
             accent="blue"
+            photo="/photos/agadir-card.jpg"
             name={t('agadir.name')}
             location={t('agadir.location')}
             courts={t('agadir.courts')}
@@ -36,6 +38,7 @@ export default function ClubsSection() {
           <ClubCard
             href="/universiapolis"
             accent="green"
+            photo="/photos/universiapolis-card.jpg"
             name={t('universiapolis.name')}
             location={t('universiapolis.location')}
             courts={t('universiapolis.courts')}
@@ -52,6 +55,7 @@ export default function ClubsSection() {
 interface ClubCardProps {
   href: '/agadir' | '/universiapolis';
   accent: 'blue' | 'green';
+  photo: string;
   name: string;
   location: string;
   courts: string;
@@ -63,6 +67,7 @@ interface ClubCardProps {
 function ClubCard({
   href,
   accent,
+  photo,
   name,
   location,
   courts,
@@ -82,16 +87,16 @@ function ClubCard({
     <article
       className={`card group relative transition-all duration-500 ${accentBorder} ${glow} hover:-translate-y-1`}
     >
-      {/* Image / Placeholder en haut de la carte */}
-      <div
-        className={`relative aspect-[16/10] overflow-hidden bg-zinc-900 border-b border-white/10`}
-      >
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-white/20 text-sm font-mono uppercase tracking-widest">
-            [Photo principale {accent === 'blue' ? 'Agadir' : 'Universiapolis'}]
-          </span>
-        </div>
-        {/* Effet visuel = couleur d'accent en bas */}
+      {/* Photo principale de la carte */}
+      <div className="relative aspect-[16/10] overflow-hidden bg-zinc-900 border-b border-white/10">
+        <Image
+          src={photo}
+          alt={name}
+          fill
+          className="object-cover group-hover:scale-105 transition-transform duration-700"
+        />
+        <div className="absolute inset-0 bg-black/20" />
+        {/* Barre couleur d'accent en bas */}
         <div
           className={`absolute bottom-0 left-0 right-0 h-1 ${
             isBlue ? 'bg-brand-blue' : 'bg-brand-green'
