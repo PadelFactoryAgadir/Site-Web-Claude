@@ -26,6 +26,7 @@ export default function HeroSection() {
           muted
           loop
           playsInline
+          poster="/photos/agadir-hero.jpeg"
           className="absolute inset-0 w-full h-full object-cover"
         >
           <source src="/hero.mp4" type="video/mp4" />
